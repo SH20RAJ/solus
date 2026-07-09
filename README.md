@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/favicon.svg" alt="Solus Logo" width="80" height="80" />
+  <img src="public/logo.png" alt="Solus Logo" width="120" height="120" />
 </p>
 
 <h1 align="center">Solus</h1>
