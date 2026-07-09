@@ -1,13 +1,44 @@
 @import "tailwindcss";
 
 :root {
-	--background: #050507;
-	--foreground: #ededed;
+	--background: #FFFFFF;
+	--foreground: #111827;
+	--surface: #FAFAFA;
+	--card: #FFFFFF;
+	--border: #E5E7EB;
+	--text-primary: #111827;
+	--text-secondary: #6B7280;
+	--text-muted: #9CA3AF;
+	--accent: #3B82F6;
+	--success: #22C55E;
+	--warning: #F59E0B;
+	--danger: #EF4444;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: #09090B;
+		--foreground: #FAFAFA;
+		--surface: #09090B;
+		--card: #18181B;
+		--border: #27272A;
+		--text-primary: #FAFAFA;
+		--text-secondary: #A1A1AA;
+		--text-muted: #71717A;
+		--accent: #60A5FA;
+	}
 }
 
 @theme inline {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
+	--color-surface: var(--surface);
+	--color-card: var(--card);
+	--color-border: var(--border);
+	--color-text-primary: var(--text-primary);
+	--color-text-secondary: var(--text-secondary);
+	--color-text-muted: var(--text-muted);
+	--color-accent: var(--accent);
 	--font-sans: var(--font-geist-sans);
 	--font-mono: var(--font-geist-mono);
 }
@@ -15,24 +46,19 @@
 body {
 	background: var(--background);
 	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
 }
 
-/* ── Animations ── */
+/* ── Animations — only fade, scale, slide. Max 300ms, ease-out only ── */
 
 @keyframes fade-in {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
+	from { opacity: 0; }
+	to { opacity: 1; }
 }
 
-@keyframes fade-in-up {
+@keyframes slide-up {
 	from {
 		opacity: 0;
-		transform: translateY(24px);
+		transform: translateY(16px);
 	}
 	to {
 		opacity: 1;
@@ -40,44 +66,24 @@ body {
 	}
 }
 
-@keyframes pulse-slow {
-	0%,
-	100% {
-		opacity: 0.4;
-		transform: scale(1);
-	}
-	50% {
-		opacity: 0.7;
-		transform: scale(1.1);
-	}
-}
-
 .animate-fade-in {
-	animation: fade-in 0.8s ease-out both;
+	animation: fade-in 300ms ease-out both;
 }
 
-.animate-fade-in-up {
-	animation: fade-in-up 0.8s ease-out both;
+.animate-slide-up {
+	animation: slide-up 300ms ease-out both;
 }
 
-.animate-pulse-slow {
-	animation: pulse-slow 8s ease-in-out infinite;
+.animation-delay-100 {
+	animation-delay: 100ms;
 }
 
 .animation-delay-200 {
 	animation-delay: 200ms;
 }
 
-.animation-delay-400 {
-	animation-delay: 400ms;
-}
-
-.animation-delay-2000 {
-	animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-	animation-delay: 4s;
+.animation-delay-300 {
+	animation-delay: 300ms;
 }
 
 /* ── Smooth Scroll ── */
@@ -89,8 +95,7 @@ html {
 /* ── Selection ── */
 
 ::selection {
-	background: rgba(124, 58, 237, 0.3);
-	color: white;
+	background: rgba(59, 130, 246, 0.2);
 }
 
 /* ── Scrollbar ── */
@@ -104,10 +109,6 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-	background: rgba(255, 255, 255, 0.08);
+	background: var(--border);
 	border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-	background: rgba(255, 255, 255, 0.15);
 }
