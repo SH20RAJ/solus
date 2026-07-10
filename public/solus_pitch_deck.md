@@ -53,9 +53,19 @@ sequenceDiagram
 | **Voice Note Recording** | ✅ Integrated | ⚠️ Group Chat Only | ⚠️ Premium Only |
 | **Open Sharing (Opt-in Links)** | ✅ Easy Links | ✅ Forced Public | ❌ App Locked |
 
+## 5. Business Model
+
+* **Free**: Unlimited personal memories.
+* **Premium**:
+  * **AI Assistant Lyra** (private cognitive journaling assistant).
+  * AI memory organization and layout grouping.
+  * Beautiful journal book PDF exports.
+  * Multi-device private backups and family vaults.
+  * Extra cloud storage space.
+
 ---
 
-## 5. Technology Stack
+## 6. Technology Stack
 
 * **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS.
 * **Backend**: Server Actions, Drizzle ORM, Neon PostgreSQL, Cloudflare R2 Storage.

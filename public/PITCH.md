@@ -200,6 +200,7 @@ Unlimited personal memories.
 
 ### Premium
 
+* AI Assistant Lyra
 * AI memory organization
 * Beautiful exports
 * Private backups

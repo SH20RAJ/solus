@@ -421,6 +421,7 @@ export default function PitchPage() {
 							Premium
 						</p>
 						<ul className="space-y-2 text-sm text-text-secondary">
+							<li>AI Assistant Lyra</li>
 							<li>AI memory organization</li>
 							<li>Beautiful exports</li>
 							<li>Private backups</li>
