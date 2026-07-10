@@ -39,7 +39,7 @@ export default function JourneyDetailPage() {
 
 	if (isLoading) {
 		return (
-			<div className="py-8 sm:py-12 space-y-6">
+			<div className="py-10 sm:py-16 max-w-[640px] mx-auto space-y-6">
 				<div className="space-y-3">
 					<div className="h-8 w-2/3 bg-border/50 rounded-[12px] animate-pulse" />
 					<div className="h-4 w-1/3 bg-border/50 rounded-[12px] animate-pulse" />
@@ -52,34 +52,34 @@ export default function JourneyDetailPage() {
 
 	if (!journey) {
 		return (
-			<div className="py-8 sm:py-12">
+			<div className="py-10 sm:py-16 max-w-[640px] mx-auto">
 				<EmptyState message="Journey not found." actionLabel="Back to Journeys" actionHref="/journeys" />
 			</div>
 		);
 	}
 
 	return (
-		<div className="py-8 sm:py-12">
+		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
 			<Link
 				href="/journeys"
-				className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
+				className="text-xs text-text-muted hover:text-text-primary transition-colors duration-200 ease-out uppercase tracking-wider font-mono"
 			>
 				← Journeys
 			</Link>
 
-			<header className="mt-6 mb-10">
+			<header className="mt-6 mb-12">
 				<div className="flex items-start justify-between gap-4">
-					<h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
+					<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary font-serif">
 						{journey.title}
 					</h1>
 					{journey.isPublic && (
-						<span className="shrink-0 px-2.5 py-1 rounded-[8px] bg-accent/10 text-accent text-xs font-medium">
+						<span className="shrink-0 px-2.5 py-1 rounded-[8px] bg-accent/10 text-accent text-[10px] font-medium uppercase tracking-wider font-mono">
 							Public
 						</span>
 					)}
 				</div>
 				{journey.description && (
-					<p className="mt-3 text-base text-text-secondary leading-relaxed">
+					<p className="mt-3 text-sm text-text-secondary leading-relaxed">
 						{journey.description}
 					</p>
 				)}

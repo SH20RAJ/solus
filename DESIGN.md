@@ -420,6 +420,10 @@ Alternative
 
 Inter
 
+Serif Font
+
+Lora (used for headings, reflections, and autobiography entries)
+
 ---
 
 Font Scale
@@ -581,6 +585,10 @@ Content Width
 Reading Width
 
 680px
+
+App Page Width
+
+640px (optimized for single-column reading and personal reflection)
 
 Maximum
 
@@ -854,15 +862,15 @@ No reactions
 
 # Post Design
 
-Photo
+Photo (should float inside the card container with 16px rounded corners, aspect-[4/3] landscape)
 
-Caption
+Caption (uses font-serif/Lora in italic for text-only reflections to look like a premium book/diary; normal font-sans for posts with photos)
 
 Date
 
 Location (optional)
 
-Mood (optional)
+Mood (optional, styled as a pill badge)
 
 Nothing else.
 

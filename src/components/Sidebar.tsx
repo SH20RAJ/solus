@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "@/lib/auth-client";
 
 const NAV_ITEMS = [
 	{ href: "/home", label: "Home", icon: HomeIcon },
@@ -14,25 +15,36 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
 	const pathname = usePathname();
+	const { data: session } = useSession();
+
+	const handleSignOut = () => {
+		signOut({
+			fetchOptions: {
+				onSuccess: () => {
+					window.location.assign("/login");
+				},
+			},
+		});
+	};
 
 	return (
-		<aside className="hidden sm:flex flex-col w-[240px] h-screen border-r border-border bg-card fixed left-0 top-0">
+		<aside className="hidden sm:flex flex-col w-[260px] h-screen border-r border-border/40 bg-background fixed left-0 top-0 z-40 select-none">
 			{/* Logo */}
-			<div className="flex items-center gap-2.5 px-5 py-5">
+			<div className="flex items-center gap-3 px-6 py-6">
 				<Image
 					src="/logo.png"
 					alt="Solus"
-					width={32}
-					height={32}
-					className="rounded-[10px]"
+					width={28}
+					height={28}
+					className="rounded-lg"
 				/>
-				<span className="text-base font-semibold tracking-tight text-text-primary">
+				<span className="text-base font-semibold tracking-tight text-text-primary font-serif">
 					Solus
 				</span>
 			</div>
 
 			{/* Nav links */}
-			<nav className="flex-1 px-3 mt-4 space-y-1" aria-label="Main navigation">
+			<nav className="flex-1 px-4 mt-6 space-y-1.5" aria-label="Main navigation">
 				{NAV_ITEMS.map((item) => {
 					const isActive = pathname === item.href;
 					const Icon = item.icon;
@@ -41,29 +53,65 @@ export default function Sidebar() {
 						<Link
 							key={item.href}
 							href={item.href}
-							className={`flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-sm transition-colors duration-200 ease-out ${
+							className={`flex items-center gap-3 px-3 py-2 rounded-[10px] text-sm transition-all duration-200 ease-out ${
 								isActive
-									? "bg-surface text-text-primary font-medium"
-									: "text-text-secondary hover:text-text-primary hover:bg-surface"
+									? "bg-card text-text-primary font-medium shadow-sm border border-border/50"
+									: "text-text-secondary hover:text-text-primary hover:bg-card/50"
 							}`}
 							aria-current={isActive ? "page" : undefined}
 						>
-							<Icon size={20} />
+							<Icon size={18} className={isActive ? "text-accent" : "text-text-muted"} />
 							{item.label}
 						</Link>
 					);
 				})}
 			</nav>
 
-			{/* Create button */}
-			<div className="px-3 pb-5">
+			{/* Action & User Info */}
+			<div className="px-4 pb-6 space-y-4">
 				<Link
 					href="/create"
-					className="flex items-center justify-center gap-2 h-11 rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85"
+					className="flex items-center justify-center gap-2 w-full h-10 rounded-[10px] bg-text-primary text-background text-sm font-medium transition-all duration-200 ease-out hover:opacity-90 active:scale-[0.98]"
 				>
-					<PlusIcon size={18} />
-					Create Memory
+					<PlusIcon size={16} />
+					Create Entry
 				</Link>
+
+				{session?.user && (
+					<div className="flex items-center justify-between p-2 rounded-[12px] bg-card/40 border border-border/30">
+						<div className="flex items-center gap-2.5 min-w-0">
+							{session.user.image ? (
+								<Image
+									src={session.user.image}
+									alt={session.user.name ?? "User"}
+									width={32}
+									height={32}
+									className="rounded-full shrink-0 border border-border/50"
+								/>
+							) : (
+								<div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center text-xs font-semibold text-text-muted shrink-0">
+									{session.user.name?.charAt(0).toUpperCase()}
+								</div>
+							)}
+							<div className="min-w-0">
+								<p className="text-xs font-semibold text-text-primary truncate">
+									{session.user.name}
+								</p>
+								<p className="text-[10px] text-text-muted truncate">
+									{session.user.email}
+								</p>
+							</div>
+						</div>
+						<button
+							onClick={handleSignOut}
+							className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface transition-colors cursor-pointer shrink-0"
+							title="Sign Out"
+							type="button"
+						>
+							<LogOutIcon size={14} />
+						</button>
+					</div>
+				)}
 			</div>
 		</aside>
 	);
@@ -123,3 +171,14 @@ function PlusIcon({ size = 24 }: { size?: number }) {
 		</svg>
 	);
 }
+
+function LogOutIcon({ size = 24 }: { size?: number }) {
+	return (
+		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+			<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+			<polyline points="16 17 21 12 16 7" />
+			<line x1="21" y1="12" x2="9" y2="12" />
+		</svg>
+	);
+}
+

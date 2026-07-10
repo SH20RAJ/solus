@@ -29,13 +29,13 @@ export default function StoriesPage() {
 	);
 
 	return (
-		<div className="py-8 sm:py-12">
+		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
 			<header className="mb-10">
-				<h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
+				<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary font-serif">
 					Stories
 				</h1>
-				<p className="mt-1 text-sm text-text-muted">
-					Moments that last 24 hours.
+				<p className="mt-1.5 text-xs sm:text-sm text-text-muted leading-relaxed">
+					Moments captured and kept for 24 hours.
 				</p>
 			</header>
 
@@ -47,8 +47,8 @@ export default function StoriesPage() {
 				</div>
 			) : activeStories.length === 0 ? (
 				<EmptyState
-					message="No stories yet. Share a fleeting moment."
-					actionLabel="Create Story"
+					message="No stories captured yet. Share a fleeting reflection."
+					actionLabel="Capture Story"
 					actionHref="/create"
 				/>
 			) : (

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
 import { PostCardSkeleton } from "@/components/Skeleton";
@@ -40,22 +41,55 @@ export default function HomePage() {
 	const posts = (data as PostsResponse)?.data ?? [];
 
 	return (
-		<div className="py-8 sm:py-12">
+		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
 			{/* Greeting */}
 			<header className="mb-10">
-				<h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
-					{getGreeting()}
-				</h1>
-				<p className="mt-1 text-sm text-text-muted">
+				<p className="text-[10px] uppercase tracking-[0.2em] font-mono text-text-muted mb-2">
 					{getDateString()}
 				</p>
+				<h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-text-primary font-serif">
+					{getGreeting()}
+				</h1>
 			</header>
+
+			{/* Reflection Prompt (Apple Journal style) */}
+			<Link
+				href="/create"
+				className="group block p-5 rounded-[20px] bg-card border border-border/40 hover:border-border/80 transition-all duration-300 ease-out mb-12 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] active:scale-[0.99]"
+			>
+				<div className="flex items-center justify-between gap-4">
+					<div>
+						<h3 className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors duration-200">
+							New Entry
+						</h3>
+						<p className="text-xs text-text-secondary mt-1 leading-relaxed">
+							What happened today? Document a reflection or a moment.
+						</p>
+					</div>
+					<div className="shrink-0 w-8 h-8 rounded-full bg-surface border border-border/60 flex items-center justify-center text-text-muted group-hover:text-text-primary group-hover:bg-card transition-all duration-300">
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+							<line x1="12" y1="5" x2="12" y2="19" />
+							<line x1="5" y1="12" x2="19" y2="12" />
+						</svg>
+					</div>
+				</div>
+			</Link>
 
 			{/* Today's memories */}
 			<section>
-				<h2 className="text-sm text-text-muted mb-6 tracking-wide">
-					Your memories
-				</h2>
+				<div className="flex items-center justify-between mb-6">
+					<h2 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted">
+						Recent Reflections
+					</h2>
+					{posts.length > 0 && (
+						<Link
+							href="/timeline"
+							className="text-xs text-accent hover:underline transition-all duration-200"
+						>
+							View Timeline
+						</Link>
+					)}
+				</div>
 
 				{isLoading ? (
 					<div className="space-y-6">
@@ -64,8 +98,8 @@ export default function HomePage() {
 					</div>
 				) : posts.length === 0 ? (
 					<EmptyState
-						message="You haven't captured today yet."
-						actionLabel="Create Memory"
+						message="Your journal is empty. Take a moment to capture your first reflection."
+						actionLabel="Write First Entry"
 						actionHref="/create"
 					/>
 				) : (

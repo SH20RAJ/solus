@@ -25,13 +25,13 @@ export default function TimelinePage() {
 	const posts = (data as PostsResponse)?.data ?? [];
 
 	return (
-		<div className="py-8 sm:py-12">
+		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
 			<header className="mb-10">
-				<h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
+				<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary font-serif">
 					Timeline
 				</h1>
-				<p className="mt-1 text-sm text-text-muted">
-					Your personal record.
+				<p className="mt-1.5 text-xs sm:text-sm text-text-muted leading-relaxed">
+					Your private chronological record of life.
 				</p>
 			</header>
 
@@ -43,8 +43,8 @@ export default function TimelinePage() {
 				</div>
 			) : posts.length === 0 ? (
 				<EmptyState
-					message="Your timeline is empty. Start capturing moments."
-					actionLabel="Create Memory"
+					message="Your timeline is empty. Start capturing reflections."
+					actionLabel="Write First Entry"
 					actionHref="/create"
 				/>
 			) : (

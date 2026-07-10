@@ -89,27 +89,30 @@ export default function CreatePage() {
 	};
 
 	return (
-		<div className="py-8 sm:py-12">
+		<div className="py-10 sm:py-16 max-w-[560px] mx-auto animate-slide-up">
 			<header className="mb-10">
-				<h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
-					Capture a moment.
+				<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary font-serif">
+					Capture a moment
 				</h1>
-				<p className="mt-1 text-sm text-text-muted">
-					Nobody will see this unless you decide to share it.
+				<p className="mt-1.5 text-xs sm:text-sm text-text-muted leading-relaxed">
+					This entry is entirely private and saved securely for you.
 				</p>
 			</header>
 
-			<form onSubmit={handleSubmit} className="space-y-6">
+			<form onSubmit={handleSubmit} className="space-y-8">
 				{/* Photo / Video upload */}
-				<div>
+				<div className="space-y-2">
+					<span className="block text-xs uppercase tracking-wider font-mono text-text-muted">
+						Media
+					</span>
 					{preview ? (
-						<div className="relative rounded-[20px] overflow-hidden bg-surface">
+						<div className="relative rounded-[24px] overflow-hidden bg-surface border border-border/30 group">
 							<Image
 								src={preview}
 								alt="Preview"
-								width={760}
-								height={760}
-								className="w-full aspect-square object-cover"
+								width={560}
+								height={420}
+								className="w-full aspect-[4/3] object-cover"
 							/>
 							<button
 								type="button"
@@ -117,8 +120,8 @@ export default function CreatePage() {
 									setFile(null);
 									setPreview(null);
 								}}
-								className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center text-sm cursor-pointer"
-								aria-label="Remove photo"
+								className="absolute top-4 right-4 w-8 h-8 rounded-full bg-background/80 hover:bg-background text-text-primary shadow-md flex items-center justify-center text-sm cursor-pointer transition-all active:scale-90"
+								aria-label="Remove media"
 							>
 								✕
 							</button>
@@ -127,15 +130,17 @@ export default function CreatePage() {
 						<button
 							type="button"
 							onClick={() => fileInputRef.current?.click()}
-							className="w-full aspect-video rounded-[20px] border-2 border-dashed border-border bg-card flex flex-col items-center justify-center gap-3 cursor-pointer transition-colors duration-200 ease-out hover:border-text-muted"
+							className="w-full aspect-[16/10] rounded-[24px] border border-dashed border-border/60 bg-card hover:bg-surface/50 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-300 ease-out hover:border-text-muted"
 						>
-							<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-text-muted">
-								<rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-								<circle cx="9" cy="9" r="2" />
-								<path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-							</svg>
-							<span className="text-sm text-text-muted">
-								Add a photo or video
+							<div className="w-10 h-10 rounded-full bg-surface border border-border/40 flex items-center justify-center text-text-muted">
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+									<polyline points="17 8 12 3 7 8" />
+									<line x1="12" y1="3" x2="12" y2="15" />
+								</svg>
+							</div>
+							<span className="text-xs text-text-secondary font-medium">
+								Upload a photo or video
 							</span>
 						</button>
 					)}
@@ -149,43 +154,41 @@ export default function CreatePage() {
 				</div>
 
 				{/* Caption */}
-				<div>
-					<label htmlFor="caption" className="block text-sm font-medium text-text-primary mb-2">
-						Caption
+				<div className="space-y-2">
+					<label htmlFor="caption" className="block text-xs uppercase tracking-wider font-mono text-text-muted">
+						Reflection
 					</label>
 					<textarea
 						id="caption"
 						value={caption}
 						onChange={(e) => setCaption(e.target.value)}
-						placeholder="What's on your mind?"
-						rows={3}
+						placeholder="Write down your thoughts, feelings, or memories..."
+						rows={5}
 						maxLength={2000}
-						className="w-full px-4 py-3 rounded-[14px] border border-border bg-card text-text-primary text-base placeholder:text-text-muted resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-colors duration-200 ease-out"
+						className="w-full px-4 py-3.5 rounded-[16px] border border-border/40 bg-card text-text-primary text-sm placeholder:text-text-muted/60 resize-none focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent transition-all duration-200 ease-out leading-relaxed"
 					/>
 				</div>
 
 				{/* Location */}
-				<div>
-					<label htmlFor="location" className="block text-sm font-medium text-text-primary mb-2">
+				<div className="space-y-2">
+					<label htmlFor="location" className="block text-xs uppercase tracking-wider font-mono text-text-muted">
 						Location
-						<span className="text-text-muted font-normal ml-1">(optional)</span>
 					</label>
 					<input
 						id="location"
 						type="text"
 						value={location}
 						onChange={(e) => setLocation(e.target.value)}
-						placeholder="Where are you?"
+						placeholder="Where are you writing this from?"
 						maxLength={200}
-						className="w-full h-12 px-4 rounded-[14px] border border-border bg-card text-text-primary text-base placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition-colors duration-200 ease-out"
+						className="w-full h-11 px-4 rounded-[14px] border border-border/40 bg-card text-text-primary text-sm placeholder:text-text-muted/60 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent transition-all duration-200 ease-out"
 					/>
 				</div>
 
 				{/* Mood */}
-				<div>
-					<span className="block text-sm font-medium text-text-primary mb-3">
-						Mood
-						<span className="text-text-muted font-normal ml-1">(optional)</span>
+				<div className="space-y-3">
+					<span className="block text-xs uppercase tracking-wider font-mono text-text-muted">
+						Current Mood
 					</span>
 					<div className="flex flex-wrap gap-2">
 						{MOODS.map((m) => (
@@ -193,10 +196,10 @@ export default function CreatePage() {
 								key={m}
 								type="button"
 								onClick={() => setMood(mood === m ? "" : m)}
-								className={`px-4 py-2 rounded-[12px] text-sm transition-colors duration-200 ease-out cursor-pointer ${
+								className={`px-3.5 py-1.5 rounded-[10px] text-xs font-medium transition-all duration-200 ease-out cursor-pointer active:scale-95 ${
 									mood === m
-										? "bg-accent text-white"
-										: "border border-border text-text-secondary hover:border-text-muted"
+										? "bg-accent/15 text-accent border border-accent/30"
+										: "border border-border/40 text-text-secondary bg-card hover:bg-surface hover:border-border"
 								}`}
 							>
 								{m}
@@ -209,9 +212,9 @@ export default function CreatePage() {
 				<button
 					type="submit"
 					disabled={isSubmitting}
-					className="w-full h-12 rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85 disabled:opacity-50 cursor-pointer"
+					className="w-full h-11 rounded-[12px] bg-text-primary text-background text-sm font-medium transition-all duration-200 ease-out hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
 				>
-					{isSubmitting ? "Saving..." : "Save Memory"}
+					{isSubmitting ? "Saving entry..." : "Save Private Entry"}
 				</button>
 			</form>
 		</div>

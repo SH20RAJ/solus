@@ -29,7 +29,7 @@ export default function ProfilePage() {
 
 	if (isPending) {
 		return (
-			<div className="py-8 sm:py-12 space-y-6">
+			<div className="py-10 sm:py-16 max-w-[640px] mx-auto space-y-6">
 				<div className="flex items-center gap-4">
 					<Skeleton className="w-16 h-16 rounded-full" />
 					<div className="space-y-2">
@@ -42,27 +42,27 @@ export default function ProfilePage() {
 	}
 
 	return (
-		<div className="py-8 sm:py-12">
+		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
 			{/* Profile header */}
-			<div className="flex items-center gap-5 mb-10">
+			<div className="flex items-center gap-5 mb-12">
 				{session?.user?.image ? (
 					<Image
 						src={session.user.image}
 						alt={session.user.name ?? "Profile"}
-						width={64}
-						height={64}
-						className="rounded-full"
+						width={72}
+						height={72}
+						className="rounded-full border border-border/50 shadow-sm"
 					/>
 				) : (
-					<div className="w-16 h-16 rounded-full bg-surface border border-border flex items-center justify-center text-xl font-semibold text-text-muted">
+					<div className="w-18 h-18 rounded-full bg-surface border border-border flex items-center justify-center text-2xl font-semibold text-text-muted">
 						{session?.user?.name?.charAt(0).toUpperCase() ?? "?"}
 					</div>
 				)}
 				<div>
-					<h1 className="text-xl font-bold tracking-tight text-text-primary">
+					<h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-text-primary font-serif">
 						{session?.user?.name ?? "Your Profile"}
 					</h1>
-					<p className="text-sm text-text-muted">
+					<p className="text-sm text-text-muted mt-1">
 						{session?.user?.email}
 					</p>
 				</div>
@@ -70,13 +70,13 @@ export default function ProfilePage() {
 
 			{/* Stats */}
 			<div className="grid grid-cols-2 gap-4 mb-10">
-				<div className="p-5 rounded-[20px] border border-border bg-card text-center">
-					<p className="text-2xl font-bold text-text-primary">{postCount}</p>
-					<p className="text-xs text-text-muted mt-1">Memories</p>
+				<div className="p-6 rounded-[24px] border border-border/30 bg-card text-center shadow-[0_2px_8px_-3px_rgba(0,0,0,0.03)]">
+					<p className="text-3xl font-bold tracking-tight text-text-primary font-serif">{postCount}</p>
+					<p className="text-xs uppercase tracking-wider font-mono text-text-muted mt-1.5">Memories</p>
 				</div>
-				<div className="p-5 rounded-[20px] border border-border bg-card text-center">
-					<p className="text-2xl font-bold text-text-primary">{journeyCount}</p>
-					<p className="text-xs text-text-muted mt-1">Journeys</p>
+				<div className="p-6 rounded-[24px] border border-border/30 bg-card text-center shadow-[0_2px_8px_-3px_rgba(0,0,0,0.03)]">
+					<p className="text-3xl font-bold tracking-tight text-text-primary font-serif">{journeyCount}</p>
+					<p className="text-xs uppercase tracking-wider font-mono text-text-muted mt-1.5">Journeys</p>
 				</div>
 			</div>
 
@@ -84,7 +84,7 @@ export default function ProfilePage() {
 			<div className="space-y-3">
 				<button
 					onClick={handleSignOut}
-					className="w-full h-11 rounded-[12px] border border-border text-text-secondary text-sm font-medium transition-colors duration-200 ease-out hover:text-text-primary hover:border-text-muted cursor-pointer"
+					className="w-full h-11 rounded-[12px] border border-border/40 text-text-secondary bg-card text-sm font-medium transition-all duration-200 ease-out hover:text-text-primary hover:border-text-muted active:scale-[0.99] cursor-pointer"
 				>
 					Sign Out
 				</button>

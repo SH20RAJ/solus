@@ -24,20 +24,20 @@ export default function JourneysPage() {
 	const journeys = (data as JourneysResponse)?.data ?? [];
 
 	return (
-		<div className="py-8 sm:py-12">
+		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
 			<header className="mb-10">
-				<h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
+				<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary font-serif">
 					Journeys
 				</h1>
-				<p className="mt-1 text-sm text-text-muted">
-					Stories built over time.
+				<p className="mt-1.5 text-xs sm:text-sm text-text-muted leading-relaxed">
+					Curate your private memories into shared or private collections.
 				</p>
 			</header>
 
 			{isLoading ? (
 				<div className="space-y-4">
 					{Array.from({ length: 3 }).map((_, i) => (
-						<div key={i} className="p-6 rounded-[20px] border border-border bg-card space-y-3">
+						<div key={i} className="p-6 rounded-[24px] border border-border/30 bg-card space-y-3">
 							<Skeleton className="h-5 w-2/3" />
 							<Skeleton className="h-4 w-1/2" />
 						</div>
@@ -45,7 +45,7 @@ export default function JourneysPage() {
 				</div>
 			) : journeys.length === 0 ? (
 				<EmptyState
-					message="No journeys yet. Group your memories into meaningful stories."
+					message="No journeys curated yet. Keep documenting until you're ready to bundle memories."
 				/>
 			) : (
 				<div className="space-y-4">
@@ -53,7 +53,7 @@ export default function JourneysPage() {
 						<Link
 							key={journey.id}
 							href={`/journeys/${journey.id}`}
-							className="block p-6 rounded-[20px] border border-border bg-card transition-colors duration-200 ease-out hover:bg-surface"
+							className="block p-6 rounded-[24px] border border-border/30 bg-card transition-all duration-300 ease-out hover:bg-surface/50 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.05)]"
 						>
 							<div className="flex items-start justify-between gap-4">
 								<div>
@@ -74,7 +74,7 @@ export default function JourneysPage() {
 									</p>
 								</div>
 								{journey.isPublic && (
-									<span className="shrink-0 px-2.5 py-1 rounded-[8px] bg-accent/10 text-accent text-xs font-medium">
+									<span className="shrink-0 px-2.5 py-1 rounded-[8px] bg-accent/10 text-accent text-[10px] font-medium uppercase tracking-wider font-mono">
 										Public
 									</span>
 								)}
