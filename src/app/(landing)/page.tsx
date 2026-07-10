@@ -2,8 +2,26 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function LandingPage() {
+	const jsonLd = {
+		"@context": "https://schema.org",
+		"@type": "SoftwareApplication",
+		"name": "Solus",
+		"operatingSystem": "Web",
+		"applicationCategory": "SocialNetworkingApplication",
+		"description": "A private-first social platform where people document their lives without an audience.",
+		"offers": {
+			"@type": "Offer",
+			"price": "0",
+			"priceCurrency": "USD"
+		}
+	};
+
 	return (
 		<div className="min-h-screen bg-background text-text-primary">
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+			/>
 			{/* ── Nav ── */}
 			<nav className="flex items-center justify-between px-4 sm:px-6 py-5 max-w-[960px] mx-auto">
 				<div className="flex items-center gap-2.5">

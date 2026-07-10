@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
 		remotePatterns: [
 			{ protocol: "https", hostname: "lh3.googleusercontent.com" },
 			{ protocol: "https", hostname: "**.apple.com" },
+			{
+				protocol: "https",
+				hostname: "solus.shraj.workers.dev",
+				pathname: "/**",
+			},
 		],
 	},
 };

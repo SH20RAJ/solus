@@ -9,8 +9,25 @@ export const metadata: Metadata = {
 };
 
 export default function PitchPage() {
+	const jsonLd = {
+		"@context": "https://schema.org",
+		"@type": "ItemPage",
+		"name": "Solus Pitch — The Personal Social Network",
+		"description": "Document your life without an audience, share your story when you're ready.",
+		"url": "https://solus.shraj.workers.dev/pitch",
+		"mainEntity": {
+			"@type": "Product",
+			"name": "Solus",
+			"description": "The world's first Personal Social Network."
+		}
+	};
+
 	return (
 		<div className="min-h-screen bg-background text-text-primary">
+			<script
+				type="application/ld+json"
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+			/>
 			{/* ── Nav ── */}
 			<nav className="flex items-center justify-between px-4 sm:px-6 py-5 max-w-[960px] mx-auto">
 				<Link href="/" className="flex items-center gap-2.5">

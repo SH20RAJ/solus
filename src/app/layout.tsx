@@ -66,8 +66,23 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const jsonLd = {
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		"name": "Solus",
+		"url": "https://solus.shraj.workers.dev",
+		"description": "A private social network where you document your life without an audience.",
+		"image": "https://solus.shraj.workers.dev/og-image.png"
+	};
+
 	return (
 		<html lang="en">
+			<head>
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+				/>
+			</head>
 			<body className={`${geistSans.variable} ${geistMono.variable} ${lora.variable} antialiased`}>{children}</body>
 		</html>
 	);
