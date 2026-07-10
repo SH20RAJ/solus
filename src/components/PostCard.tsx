@@ -207,9 +207,18 @@ export default function PostCard({
 						</button>
 					</div>
 
-					<span className="text-[10px] text-text-muted font-mono uppercase tracking-wider">
-						{formattedDate}
-					</span>
+					{id ? (
+						<Link
+							href={`/posts/${id}`}
+							className="text-[10px] text-text-muted hover:text-accent font-mono uppercase tracking-wider transition-colors duration-200"
+						>
+							{formattedDate}
+						</Link>
+					) : (
+						<span className="text-[10px] text-text-muted font-mono uppercase tracking-wider">
+							{formattedDate}
+						</span>
+					)}
 				</div>
 
 				{id && (
@@ -311,14 +320,27 @@ export default function PostCard({
 							>
 								{mediaUrls.map((url, idx) => (
 									<div key={idx} className="relative w-full h-full shrink-0">
-										<Image
-											src={url}
-											alt={`${caption ?? "Memory"} - Slide ${idx + 1}`}
-											fill
-											className="object-cover"
-											sizes="(max-width: 768px) 100vw, 760px"
-											onError={() => setImageError(true)}
-										/>
+										{id ? (
+											<Link href={`/posts/${id}`} className="block w-full h-full relative">
+												<Image
+													src={url}
+													alt={`${caption ?? "Memory"} - Slide ${idx + 1}`}
+													fill
+													className="object-cover"
+													sizes="(max-width: 768px) 100vw, 760px"
+													onError={() => setImageError(true)}
+												/>
+											</Link>
+										) : (
+											<Image
+												src={url}
+												alt={`${caption ?? "Memory"} - Slide ${idx + 1}`}
+												fill
+												className="object-cover"
+												sizes="(max-width: 768px) 100vw, 760px"
+												onError={() => setImageError(true)}
+											/>
+										)}
 									</div>
 								))}
 							</div>
@@ -369,14 +391,27 @@ export default function PostCard({
 							onError={() => setImageError(true)}
 						/>
 					) : (
-						<Image
-							src={mediaUrls[0] || mediaUrl}
-							alt={caption ?? "Memory"}
-							fill
-							className="object-cover"
-							sizes="(max-width: 768px) 100vw, 760px"
-							onError={() => setImageError(true)}
-						/>
+						id ? (
+							<Link href={`/posts/${id}`} className="block w-full h-full relative">
+								<Image
+									src={mediaUrls[0] || mediaUrl}
+									alt={caption ?? "Memory"}
+									fill
+									className="object-cover"
+									sizes="(max-width: 768px) 100vw, 760px"
+									onError={() => setImageError(true)}
+								/>
+							</Link>
+						) : (
+							<Image
+								src={mediaUrls[0] || mediaUrl}
+								alt={caption ?? "Memory"}
+								fill
+								className="object-cover"
+								sizes="(max-width: 768px) 100vw, 760px"
+								onError={() => setImageError(true)}
+							/>
+						)
 					)}
 
 					{/* Heart Pop Animation */}

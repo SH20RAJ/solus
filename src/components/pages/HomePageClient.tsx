@@ -42,8 +42,11 @@ export default function HomePageClient() {
 	const [loadingMore, setLoadingMore] = useState(false);
 	const [initialLoading, setInitialLoading] = useState(true);
 	const loaderRef = useRef<HTMLDivElement | null>(null);
+	const fetchingRef = useRef(false);
 
 	const fetchPosts = async (currentOffset: number, isInitial = false) => {
+		if (fetchingRef.current) return;
+		fetchingRef.current = true;
 		try {
 			const res = await fetch(`/api/posts?limit=6&offset=${currentOffset}`, { credentials: "include" });
 			const json = await res.json();
@@ -52,7 +55,11 @@ export default function HomePageClient() {
 					setPosts(json.data);
 					setOffset(json.data.length);
 				} else {
-					setPosts((prev) => [...prev, ...json.data]);
+					setPosts((prev) => {
+						const existingIds = new Set(prev.map((p) => p.id));
+						const newPosts = json.data.filter((p: Post) => !existingIds.has(p.id));
+						return [...prev, ...newPosts];
+					});
 					setOffset((prev) => prev + json.data.length);
 				}
 				setHasMore(json.hasMore);
@@ -60,6 +67,7 @@ export default function HomePageClient() {
 		} catch {
 			// error
 		} finally {
+			fetchingRef.current = false;
 			if (isInitial) setInitialLoading(false);
 			setLoadingMore(false);
 		}
