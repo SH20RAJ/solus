@@ -464,6 +464,94 @@ export default function PitchPage() {
 
 			<Divider />
 
+			{/* ── Upcoming Features ── */}
+			<section className="px-4 sm:px-6 py-20 sm:py-24 max-w-[680px] mx-auto">
+				<p className="text-sm text-text-muted mb-4 tracking-wide">
+					On the roadmap
+				</p>
+				<h2 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight text-text-primary mb-8">
+					Upcoming Features
+				</h2>
+				<p className="text-base text-text-secondary leading-relaxed mb-8">
+					We are expanding Solus to make cataloging your life even more effortless, private, and insightful. Here is what is coming next:
+				</p>
+				<div className="space-y-4">
+					<div className="p-6 rounded-[20px] bg-card border border-border flex flex-col sm:flex-row gap-4 items-start text-left">
+						<span className="text-2xl shrink-0">👤</span>
+						<div>
+							<h3 className="text-base font-bold text-text-primary">
+								AI Face Recognition & Auto-Separation
+							</h3>
+							<p className="text-xs text-text-secondary mt-1 leading-relaxed">
+								Locally scans photo uploads to automatically group people appearing in your memories. Easily create private profiles for close friends, family, and yourself to trace shared life timelines.
+							</p>
+						</div>
+					</div>
+
+					<div className="p-6 rounded-[20px] bg-card border border-border flex flex-col sm:flex-row gap-4 items-start text-left">
+						<span className="text-2xl shrink-0">📖</span>
+						<div>
+							<h3 className="text-base font-bold text-text-primary">
+								AI Auto-Collections & Album Creator
+							</h3>
+							<p className="text-xs text-text-secondary mt-1 leading-relaxed">
+								Automatically group related memories and posts into beautiful, structured digital books based on geo-locations, tag clusters, temporal proximities, or visual themes.
+							</p>
+						</div>
+					</div>
+
+					<div className="p-6 rounded-[20px] bg-card border border-accent/25 flex flex-col sm:flex-row gap-4 items-start text-left shadow-sm bg-accent/5">
+						<span className="text-2xl shrink-0">🧠</span>
+						<div>
+							<h3 className="text-base font-bold text-accent">
+								Introspective AI Likes & Subconscious Self-Comments
+							</h3>
+							<p className="text-xs text-text-secondary mt-1 leading-relaxed">
+								Instead of addictive, dopamine-fueled social comments, Solus integrates a reflective AI that acts as your inner subconscious. It reads your private posts and interacts (with likes and comments) to prompt deeper writing, challenge assumptions, and remind you of past life wisdom.
+							</p>
+						</div>
+					</div>
+
+					<div className="p-6 rounded-[20px] bg-card border border-border flex flex-col sm:flex-row gap-4 items-start text-left">
+						<span className="text-2xl shrink-0">⏳</span>
+						<div>
+							<h3 className="text-base font-bold text-text-primary">
+								Time-Locked Memories & Vaults
+							</h3>
+							<p className="text-xs text-text-secondary mt-1 leading-relaxed">
+								Write messages to your future self or log current situations, then lock them under a temporal countdown. The system completely encrypts the post, rendering it unreadable until the unlock date is reached.
+							</p>
+						</div>
+					</div>
+
+					<div className="p-6 rounded-[20px] bg-card border border-border flex flex-col sm:flex-row gap-4 items-start text-left">
+						<span className="text-2xl shrink-0">🗺️</span>
+						<div>
+							<h3 className="text-base font-bold text-text-primary">
+								Subconscious Mood Landscapes
+							</h3>
+							<p className="text-xs text-text-secondary mt-1 leading-relaxed">
+								Translates the semantic sentiments of your captions and logs into beautiful, abstract topographical mood maps (e.g. "Inspired Valleys" or "Quiet Fjords") to track mental states over time.
+							</p>
+						</div>
+					</div>
+
+					<div className="p-6 rounded-[20px] bg-card border border-border flex flex-col sm:flex-row gap-4 items-start text-left">
+						<span className="text-2xl shrink-0">🧘</span>
+						<div>
+							<h3 className="text-base font-bold text-text-primary">
+								Offline Sanctuary & Sync Rituals
+							</h3>
+							<p className="text-xs text-text-secondary mt-1 leading-relaxed">
+								An offline-first writing sandbox that holds entries locally on your device. When you are ready to upload, the sync triggers a brief, relaxing breathing exercise to prevent mindless connection loops.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<Divider />
+
 			{/* ── Why Solus Wins ── */}
 			<section className="px-4 sm:px-6 py-20 sm:py-24 max-w-[680px] mx-auto">
 				<p className="text-sm text-text-muted mb-4 tracking-wide">
