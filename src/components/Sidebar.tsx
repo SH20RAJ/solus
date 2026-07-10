@@ -29,6 +29,8 @@ export default function Sidebar() {
 		if (stored === "true") {
 			setIsCollapsed(true);
 		}
+		// Hidden dev reminder
+		console.log("💡 [Dev Vault] Remember to buy solusapp.io!");
 	}, []);
 
 	// Dynamic offset for main page content
