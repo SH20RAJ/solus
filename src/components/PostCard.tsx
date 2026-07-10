@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Dropdown from "@/components/ui/Dropdown";
 import CommentsModal from "@/components/CommentsModal";
 import { formatCaption } from "@/utils/text";
@@ -92,12 +93,20 @@ export default function PostCard({
 		return { content: text.slice(0, LIMIT) + "...", isTruncated: true };
 	};
 
+	const router = useRouter();
 	const dropdownItems = [];
+	if (id) {
+		dropdownItems.push({
+			label: "View Entry",
+			onClick: () => router.push(`/posts/${id}`),
+			className: "text-text-primary hover:bg-surface",
+		});
+	}
 	if (onDelete && id) {
 		dropdownItems.push({
 			label: "Delete Reflection",
 			onClick: () => onDelete(id),
-			className: "text-danger hover:bg-danger/10",
+			className: "text-red-400 hover:bg-red-500/10 hover:text-red-300",
 		});
 	}
 
