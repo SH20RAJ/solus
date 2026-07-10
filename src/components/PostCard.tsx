@@ -66,21 +66,11 @@ export default function PostCard({
 		lastTap.current = now;
 	};
 
-	const truncateCaption = (text: string) => {
+	const getTruncatedCaption = (text: string) => {
 		const LIMIT = 120;
-		if (text.length <= LIMIT) return text;
-		if (isExpanded) return text;
-		return (
-			<>
-				{text.slice(0, LIMIT)}...{" "}
-				<button
-					onClick={() => setIsExpanded(true)}
-					className="text-text-muted hover:text-text-primary text-xs font-semibold focus:outline-none ml-1 cursor-pointer"
-				>
-					more
-				</button>
-			</>
-		);
+		if (text.length <= LIMIT) return { content: text, isTruncated: false };
+		if (isExpanded) return { content: text, isTruncated: false };
+		return { content: text.slice(0, LIMIT) + "...", isTruncated: true };
 	};
 
 	const dropdownItems = [];
@@ -438,12 +428,23 @@ export default function PostCard({
 				</div>
 
 				{/* Caption Block */}
-				{caption && (
-					<p className="text-sm text-text-primary leading-relaxed font-serif">
-						<span className="font-bold mr-2 text-xs font-sans">{username}</span>
-						{formatCaption(truncateCaption(caption))}
-					</p>
-				)}
+				{caption && (() => {
+					const { content, isTruncated } = getTruncatedCaption(caption);
+					return (
+						<p className="text-sm text-text-primary leading-relaxed font-serif">
+							<span className="font-bold mr-2 text-xs font-sans">{username}</span>
+							{formatCaption(content)}
+							{isTruncated && (
+								<button
+									onClick={() => setIsExpanded(true)}
+									className="text-text-muted hover:text-text-primary text-xs font-semibold focus:outline-none ml-1 cursor-pointer font-sans"
+								>
+									more
+								</button>
+							)}
+						</p>
+					);
+				})()}
 			</div>
 
 			{id && (

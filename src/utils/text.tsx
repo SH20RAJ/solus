@@ -4,8 +4,10 @@ import Link from "next/link";
 /**
  * Parses a text string and wraps hashtags (#word) in Next.js Links pointing to /tags/[word]
  */
-export function formatCaption(text: string): React.ReactNode[] {
-	if (!text) return [];
+export function formatCaption(text: any): React.ReactNode[] {
+	if (!text || typeof text !== "string") {
+		return [];
+	}
 
 	const words = text.split(/(\s+)/); // Keep whitespace
 	return words.map((word, idx) => {
