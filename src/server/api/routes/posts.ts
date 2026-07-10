@@ -76,7 +76,7 @@ const posts = new Hono()
 			z.object({
 				caption: z.string().optional(),
 				mediaUrl: z.string().optional(),
-				mediaType: z.enum(["image", "video"]).optional(),
+				mediaType: z.enum(["image", "video", "audio"]).optional(),
 				location: z.string().optional(),
 				mood: z.string().optional(),
 				isPublic: z.boolean().optional(),

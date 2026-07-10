@@ -39,14 +39,14 @@ export function useStories(config?: SWRConfiguration) {
 	return useSWR("/api/stories", fetcher, config);
 }
 
-/** Fetch user's journeys */
-export function useJourneys(config?: SWRConfiguration) {
-	return useSWR("/api/journeys", fetcher, config);
+/** Fetch user's collections */
+export function useCollections(config?: SWRConfiguration) {
+	return useSWR("/api/collections", fetcher, config);
 }
 
-/** Fetch a single journey with its posts */
-export function useJourney(id: string | null, config?: SWRConfiguration) {
-	return useSWR(id ? `/api/journeys/${id}` : null, fetcher, config);
+/** Fetch a single collection with its posts */
+export function useCollection(id: string | null, config?: SWRConfiguration) {
+	return useSWR(id ? `/api/collections/${id}` : null, fetcher, config);
 }
 
 /** Mutation helper for POST/PATCH/DELETE */

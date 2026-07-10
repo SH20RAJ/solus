@@ -3,7 +3,7 @@
 import Link from "next/link";
 import EmptyState from "@/components/EmptyState";
 import Skeleton from "@/components/Skeleton";
-import { useJourneys } from "@/lib/api-client";
+import { useCollections } from "@/lib/api-client";
 
 interface Journey {
 	id: string;
@@ -19,8 +19,8 @@ interface JourneysResponse {
 	data: Journey[];
 }
 
-export default function JourneysPage() {
-	const { data, isLoading } = useJourneys();
+export default function CollectionsPage() {
+	const { data, isLoading } = useCollections();
 	const journeys = (data as JourneysResponse)?.data ?? [];
 
 	return (
@@ -52,7 +52,7 @@ export default function JourneysPage() {
 					{journeys.map((journey) => (
 						<Link
 							key={journey.id}
-							href={`/journeys/${journey.id}`}
+							href={`/collections/${journey.id}`}
 							className="block p-6 rounded-[24px] border border-border/30 bg-card transition-all duration-300 ease-out hover:bg-surface/50 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.05)]"
 						>
 							<div className="flex items-start justify-between gap-4">

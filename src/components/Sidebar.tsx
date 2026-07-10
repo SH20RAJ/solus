@@ -1,21 +1,37 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
 
 const NAV_ITEMS = [
 	{ href: "/home", label: "Home", icon: HomeIcon },
 	{ href: "/timeline", label: "Timeline", icon: TimelineIcon },
 	{ href: "/stories", label: "Stories", icon: StoriesIcon },
-	{ href: "/journeys", label: "Collections", icon: JourneyIcon },
+	{ href: "/collections", label: "Collections", icon: JourneyIcon },
 	{ href: "/profile", label: "Profile", icon: ProfileIcon },
 ] as const;
 
 export default function Sidebar() {
 	const pathname = usePathname();
+	const router = useRouter();
 	const { data: session } = useSession();
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const handleSearchSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!searchQuery.trim()) return;
+
+		const query = searchQuery.trim();
+		if (query.startsWith("#")) {
+			router.push(`/tags/${query.substring(1).toLowerCase()}`);
+		} else {
+			router.push(`/locations/${encodeURIComponent(query)}`);
+		}
+		setSearchQuery("");
+	};
 
 	const handleSignOut = () => {
 		signOut({
@@ -43,8 +59,24 @@ export default function Sidebar() {
 				</span>
 			</div>
 
+			{/* Search Input Block */}
+			<form onSubmit={handleSearchSubmit} className="px-4 mb-2">
+				<div className="relative">
+					<input
+						type="text"
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+						placeholder="Search tags or locations..."
+						className="w-full h-9 pl-8 pr-3 text-xs rounded-lg border border-border/40 bg-card text-text-primary placeholder:text-text-muted/65 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent transition-all duration-200"
+					/>
+					<span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted">
+						<SearchIcon size={12} />
+					</span>
+				</div>
+			</form>
+
 			{/* Nav links */}
-			<nav className="flex-1 px-4 mt-6 space-y-1.5" aria-label="Main navigation">
+			<nav className="flex-1 px-4 mt-4 space-y-1.5" aria-label="Main navigation">
 				{NAV_ITEMS.map((item) => {
 					const isActive = pathname === item.href;
 					const Icon = item.icon;
@@ -180,6 +212,15 @@ function LogOutIcon({ size = 24 }: { size?: number }) {
 			<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
 			<polyline points="16 17 21 12 16 7" />
 			<line x1="21" y1="12" x2="9" y2="12" />
+		</svg>
+	);
+}
+
+function SearchIcon({ size = 24 }: { size?: number }) {
+	return (
+		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+			<circle cx="11" cy="11" r="8" />
+			<line x1="21" y1="21" x2="16.65" y2="16.65" />
 		</svg>
 	);
 }

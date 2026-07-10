@@ -6,7 +6,7 @@ import { getDb } from "@/lib/db";
 import { journey, journeyPost, post } from "@/lib/db/schema";
 import { authMiddleware } from "@/server/api/middleware/auth";
 
-const journeys = new Hono()
+const collections = new Hono()
 	.use("/*", authMiddleware)
 	.get("/", async (c) => {
 		const db = getDb();
@@ -185,4 +185,4 @@ const journeys = new Hono()
 		return c.json({ success: true });
 	});
 
-export default journeys;
+export default collections;

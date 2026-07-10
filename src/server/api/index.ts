@@ -3,7 +3,7 @@ import { cors } from "hono/cors";
 import { auth } from "@/lib/auth";
 import posts from "@/server/api/routes/posts";
 import stories from "@/server/api/routes/stories";
-import journeys from "@/server/api/routes/journeys";
+import collections from "@/server/api/routes/collections";
 import upload from "@/server/api/routes/upload";
 import comments from "@/server/api/routes/comments";
 
@@ -31,7 +31,7 @@ app.on(["POST", "GET"], "/auth/*", (c) => {
 // Application routes
 app.route("/posts", posts);
 app.route("/stories", stories);
-app.route("/journeys", journeys);
+app.route("/collections", collections);
 app.route("/upload", upload);
 app.route("/comments", comments);
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import { PostCardSkeleton } from "@/components/Skeleton";
 import EmptyState from "@/components/EmptyState";
-import { useJourney } from "@/lib/api-client";
+import { useCollection } from "@/lib/api-client";
 import { useSession } from "@/lib/auth-client";
 import { mutate } from "swr";
 
@@ -33,11 +33,11 @@ interface JourneyResponse {
 	data: JourneyData;
 }
 
-export default function JourneyDetailPage() {
+export default function CollectionDetailPage() {
 	const params = useParams();
 	const id = params.id as string;
 	const { data: session } = useSession();
-	const { data, isLoading } = useJourney(id);
+	const { data, isLoading } = useCollection(id);
 	const journey = (data as JourneyResponse)?.data;
 
 	const handleDelete = async (postId: string) => {
@@ -47,7 +47,7 @@ export default function JourneyDetailPage() {
 					method: "DELETE",
 					credentials: "include",
 				});
-				mutate(`/api/journeys/${id}`);
+				mutate(`/api/collections/${id}`);
 			} catch {
 				// Silently fail
 			}
@@ -70,7 +70,7 @@ export default function JourneyDetailPage() {
 	if (!journey) {
 		return (
 			<div className="py-10 sm:py-16 max-w-[640px] mx-auto">
-				<EmptyState message="Collection not found." actionLabel="Back to Collections" actionHref="/journeys" />
+				<EmptyState message="Collection not found." actionLabel="Back to Collections" actionHref="/collections" />
 			</div>
 		);
 	}
@@ -78,7 +78,7 @@ export default function JourneyDetailPage() {
 	return (
 		<div className="py-8 sm:py-12 w-full animate-slide-up">
 			<Link
-				href="/journeys"
+				href="/collections"
 				className="text-xs text-text-muted hover:text-text-primary transition-colors duration-200 ease-out uppercase tracking-wider font-mono"
 			>
 				← Collections

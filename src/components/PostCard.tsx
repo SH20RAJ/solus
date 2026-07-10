@@ -2,8 +2,10 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import Dropdown from "@/components/ui/Dropdown";
 import CommentsModal from "@/components/CommentsModal";
+import { formatCaption } from "@/utils/text";
 
 interface PostCardProps {
 	id?: string;
@@ -121,9 +123,12 @@ export default function PostCard({
 								)}
 							</div>
 							{location && (
-								<p className="text-[10px] text-text-muted truncate mt-0.5">
-									{location}
-								</p>
+								<Link
+									href={`/locations/${encodeURIComponent(location)}`}
+									className="text-[10px] text-text-muted hover:text-accent truncate mt-0.5 inline-block"
+								>
+									📍 {location}
+								</Link>
 							)}
 						</div>
 					</div>
@@ -147,7 +152,7 @@ export default function PostCard({
 				{/* Tweet text content */}
 				{caption && (
 					<p className="text-base sm:text-lg text-text-primary leading-relaxed font-serif italic mt-2 mb-6">
-						{caption}
+						{formatCaption(caption)}
 					</p>
 				)}
 
@@ -232,9 +237,12 @@ export default function PostCard({
 							)}
 						</div>
 						{location && (
-							<p className="text-[10px] text-text-muted truncate mt-0.5">
-								{location}
-							</p>
+							<Link
+								href={`/locations/${encodeURIComponent(location)}`}
+								className="text-[10px] text-text-muted hover:text-accent truncate mt-0.5 inline-block"
+							>
+								📍 {location}
+							</Link>
 						)}
 					</div>
 				</div>
@@ -433,7 +441,7 @@ export default function PostCard({
 				{caption && (
 					<p className="text-sm text-text-primary leading-relaxed font-serif">
 						<span className="font-bold mr-2 text-xs font-sans">{username}</span>
-						{truncateCaption(caption)}
+						{formatCaption(truncateCaption(caption))}
 					</p>
 				)}
 			</div>

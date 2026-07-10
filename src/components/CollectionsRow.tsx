@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useJourneys } from "@/lib/api-client";
+import { useCollections } from "@/lib/api-client";
 import Skeleton from "@/components/Skeleton";
 
 interface Journey {
@@ -19,7 +19,7 @@ interface JourneysResponse {
 }
 
 export default function CollectionsRow() {
-	const { data: journeysData, isLoading } = useJourneys();
+	const { data: journeysData, isLoading } = useCollections();
 	const collections = (journeysData as JourneysResponse)?.data ?? [];
 
 	if (isLoading) {
@@ -55,7 +55,7 @@ export default function CollectionsRow() {
 					Collections
 				</h2>
 				<Link
-					href="/journeys"
+					href="/collections"
 					className="text-xs text-text-muted hover:text-text-primary transition-colors"
 				>
 					See all
@@ -68,7 +68,7 @@ export default function CollectionsRow() {
 					return (
 						<Link
 							key={collection.id}
-							href={`/journeys/${collection.id}`}
+							href={`/collections/${collection.id}`}
 							className="flex flex-col items-center gap-2 shrink-0 group"
 						>
 							{/* Google Photos Album style cover card */}
