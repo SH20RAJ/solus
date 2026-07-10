@@ -11,14 +11,30 @@ const posts = new Hono()
 	.get("/", async (c) => {
 		const db = getDb();
 		const userId = c.get("user").id;
+		const limit = parseInt(c.req.query("limit") || "6");
+		const offset = parseInt(c.req.query("offset") || "0");
+		const tag = c.req.query("tag");
+		const loc = c.req.query("location");
 
-		const results = await db
+		let results = await db
 			.select()
 			.from(post)
 			.where(eq(post.userId, userId))
 			.orderBy(desc(post.createdAt));
 
-		return c.json({ success: true, data: results });
+		if (tag) {
+			const cleanTag = `#${tag.toLowerCase()}`;
+			results = results.filter((p) => p.caption?.toLowerCase().includes(cleanTag));
+		}
+
+		if (loc) {
+			results = results.filter((p) => p.location?.toLowerCase() === loc.toLowerCase());
+		}
+
+		const paginated = results.slice(offset, offset + limit);
+		const hasMore = offset + limit < results.length;
+
+		return c.json({ success: true, data: paginated, hasMore });
 	})
 	.get("/:id", async (c) => {
 		const db = getDb();

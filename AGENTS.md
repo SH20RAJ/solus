@@ -861,6 +861,18 @@ When modifying this project:
 
 15. Leave the codebase cleaner than you found it.
 
+16. NEVER use `"use client";` in `page.tsx` or `layout.tsx` files. Always make them Server Components, export metadata there, and delegate client-side state/effects to imported client component wrappers (e.g. `*PageClient.tsx`).
+
+---
+
+# Current Codebase Context
+
+- **Routing & Rendering Architecture**: Fully standard App Router. All `page.tsx` and `layout.tsx` files are Server Components exporting Next.js SEO `metadata`. Client states are delegated to `src/components/pages/*PageClient.tsx` wrappers.
+- **Ambient Healing Sound (396Hz)**: Mounted globally within `src/app/(landing)/layout.tsx` (the landing and pitch pages shared layout) so the sound does not restart when transitioning between `/` and `/pitch`.
+- **Feed Infinite Scroll**: Recent Reflections feed uses pagination (`limit` & `offset` query params) with an Intersection Observer trigger at the bottom.
+- **Hashtags & Location Tagging**: Captions are parsed using `formatCaption` mapping tags to `/tags/[tag]` routes. Location tags on postcards are mapped to `/locations/[location]` routes. Both display custom streams.
+- **Profile Dashboard**: Focuses on private reflection insights: contains stats widgets, a segmented horizontal Mood Map bar, and a memory directory table rather than clone grids.
+
 ---
 
 # Definition of Done
