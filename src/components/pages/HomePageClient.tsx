@@ -49,7 +49,7 @@ export default function HomePageClient() {
 		fetchingRef.current = true;
 		try {
 			const res = await fetch(`/api/posts?limit=6&offset=${currentOffset}`, { credentials: "include" });
-			const json = await res.json();
+			const json = (await res.json()) as { success: boolean; data: Post[] };
 			if (json.success) {
 				if (isInitial) {
 					setPosts(json.data);

@@ -130,6 +130,29 @@ Solus is a **personal social network**. Everything works like a familiar social 
 
 ---
 
+## Product Roadmap
+
+Here is what we are building next on the Solus development roadmap:
+- 👤 **AI Face Recognition & Auto-Separation**: Local face scanning to automatically separate and group people in photos.
+- 📖 **AI Auto-Collections & Album Creator**: Smart curation of posts into styled albums using tag clusters, dates, or geo-locations.
+- 🧠 **Introspective AI Comments & Likes**: A reflective AI representing your subconscious self that self-comments to promote writing depth.
+- ⏳ **Time-Locked Memories & Vaults**: Write letters to your future self and seal them under a custom temporal lock.
+- 🗺️ **Subconscious Mood Landscapes**: Semantically analyze post content to map abstract emotional landscapes over time.
+- 🧘 **Offline Sanctuary & Sync Rituals**: An offline-first local buffer that runs relaxing breathing exercises during cloud synchronization.
+
+---
+
+## Open Source & Contributing
+
+Solus is an open-source project and we gladly welcome contributions from developers, designers, and writers! 
+
+Whether you want to build features, fix UI bugs, or improve copywriting:
+- Check out our [Contributing Guidelines](CONTRIBUTING.md) to get set up locally.
+- Follow the architectural guidelines specified in [AGENTS.md](AGENTS.md).
+- Create a fork, make changes, and open a Pull Request!
+
+---
+
 ## Tech Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org) (App Router)
