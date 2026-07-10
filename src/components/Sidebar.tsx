@@ -6,18 +6,12 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
 
-const PERSONAL_NAV_ITEMS = [
-	{ href: "/home", label: "Dashboard", icon: HomeIcon },
-	{ href: "/timeline", label: "Timeline", icon: TimelineIcon },
-	{ href: "/stories", label: "Stories", icon: StoriesIcon },
-	{ href: "/collections", label: "Collections", icon: JourneyIcon },
-	{ href: "/profile", label: "Profile", icon: ProfileIcon },
-] as const;
-
-const LYRA_NAV_ITEMS = [
-	{ href: "/home?lyra=true", label: "Lyra Chat", icon: ChatIcon },
-	{ href: "/profile", label: "Mind Map", icon: MindIcon },
-	{ href: "/pitch", label: "Premium AI", icon: SparklesIcon },
+const NAV_ITEMS = [
+	{ href: "/home", label: "Journal", icon: JournalIcon },
+	{ href: "/timeline", label: "Timeline", icon: ClockIcon },
+	{ href: "/stories", label: "Moments", icon: MomentsIcon },
+	{ href: "/collections", label: "Collections", icon: CollectionsIcon },
+	{ href: "/profile", label: "Insights", icon: InsightsIcon },
 ] as const;
 
 export default function Sidebar() {
@@ -25,7 +19,6 @@ export default function Sidebar() {
 	const router = useRouter();
 	const { data: session } = useSession();
 	const [searchQuery, setSearchQuery] = useState("");
-	const [sidebarMode, setSidebarMode] = useState<"personal" | "lyra">("personal");
 	const [showUserMenu, setShowUserMenu] = useState(false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -80,15 +73,13 @@ export default function Sidebar() {
 		});
 	};
 
-	const activeItems = sidebarMode === "personal" ? PERSONAL_NAV_ITEMS : LYRA_NAV_ITEMS;
-
 	return (
 		<aside
-			className={`hidden sm:flex flex-col h-screen border-r border-border/40 bg-background fixed left-0 top-0 z-40 select-none font-sans justify-between transition-all duration-300 ease-in-out ${
+			className={`hidden sm:flex flex-col h-screen border-r border-border/40 bg-[#0c0c0e]/95 backdrop-blur-md fixed left-0 top-0 z-40 select-none font-sans justify-between transition-all duration-300 ease-in-out ${
 				isCollapsed ? "w-[72px]" : "w-[260px]"
 			}`}
 		>
-			{/* Top Block: macOS Window Controls, Brand Header, Mode Switcher */}
+			{/* Top Block: Brand Header, Navigation */}
 			<div className="flex flex-col">
 				{/* ── macOS Style Window Control Dots ── */}
 				<div className={`flex items-center gap-1.5 px-6 pt-5 pb-2 ${isCollapsed ? "justify-center" : ""}`}>
@@ -141,45 +132,9 @@ export default function Sidebar() {
 					</button>
 				</div>
 
-				{/* ── Segmented Control Switcher (Mockup style) ── */}
-				<div className="px-4 mb-4">
-					{isCollapsed ? (
-						<button
-							onClick={() => setSidebarMode(sidebarMode === "personal" ? "lyra" : "personal")}
-							className="w-9 h-9 mx-auto rounded-lg bg-surface/85 border border-border/20 flex items-center justify-center text-text-secondary hover:text-accent cursor-pointer transition-colors shadow-inner"
-							title={sidebarMode === "personal" ? "Switch to Lyra AI" : "Switch to Personal"}
-						>
-							{sidebarMode === "personal" ? <HomeIcon size={15} /> : <SparklesIcon size={15} />}
-						</button>
-					) : (
-						<div className="flex rounded-lg bg-surface/85 p-0.5 border border-border/20 shadow-inner">
-							<button
-								onClick={() => setSidebarMode("personal")}
-								className={`flex-1 py-1.5 text-[9px] uppercase tracking-wider font-bold rounded-md transition-all duration-200 cursor-pointer ${
-									sidebarMode === "personal"
-										? "bg-[#0c0c0e] text-accent border border-accent/25 shadow-sm font-semibold"
-										: "text-text-secondary hover:text-text-primary"
-								}`}
-							>
-								Personal
-							</button>
-							<button
-								onClick={() => setSidebarMode("lyra")}
-								className={`flex-1 py-1.5 text-[9px] uppercase tracking-wider font-bold rounded-md transition-all duration-200 cursor-pointer ${
-									sidebarMode === "lyra"
-										? "bg-[#0c0c0e] text-accent border border-accent/25 shadow-sm font-semibold"
-										: "text-text-secondary hover:text-text-primary"
-								}`}
-							>
-								Lyra AI
-							</button>
-						</div>
-					)}
-				</div>
-
 				{/* ── Search Input ── */}
 				{!isCollapsed ? (
-					<form onSubmit={handleSearchSubmit} className="px-4 mb-2">
+					<form onSubmit={handleSearchSubmit} className="px-4 mb-4 mt-2">
 						<div className="relative">
 							<input
 								type="text"
@@ -194,7 +149,7 @@ export default function Sidebar() {
 						</div>
 					</form>
 				) : (
-					<div className="flex justify-center mb-2">
+					<div className="flex justify-center mb-4 mt-2">
 						<button
 							onClick={toggleCollapse}
 							className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary transition-colors cursor-pointer"
@@ -206,9 +161,9 @@ export default function Sidebar() {
 				)}
 
 				{/* ── Primary Links ── */}
-				<nav className="px-4 mt-2 space-y-1.5" aria-label="Main navigation">
-					{activeItems.map((item) => {
-						const isActive = pathname === item.href.split("?")[0];
+				<nav className="px-4 space-y-1.5" aria-label="Main navigation">
+					{NAV_ITEMS.map((item) => {
+						const isActive = pathname === item.href;
 						const Icon = item.icon;
 
 						return (
@@ -219,7 +174,7 @@ export default function Sidebar() {
 									isActive
 										? "bg-accent/5 text-accent border-accent/20 font-semibold"
 										: "text-text-secondary hover:text-text-primary hover:bg-card/50 border-transparent"
-								} ${isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-2"}`}
+								} ${isCollapsed ? "justify-center p-2.5" : "gap-3.5 px-3.5 py-2.5"}`}
 								title={isCollapsed ? item.label : undefined}
 								aria-current={isActive ? "page" : undefined}
 							>
@@ -324,8 +279,10 @@ export default function Sidebar() {
 										onClick={() => setShowUserMenu(false)}
 										className="w-full text-left px-3 py-2 rounded-lg text-[10px] text-text-secondary hover:text-text-primary hover:bg-card transition-colors flex items-center gap-2 font-mono uppercase tracking-wider"
 									>
-										<SparklesIcon size={12} />
-										AI Lyra Premium
+										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+											<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+										</svg>
+										Solus Pitch Deck
 									</Link>
 									<div className="h-px bg-border/20 my-1" />
 									<button
@@ -350,25 +307,25 @@ export default function Sidebar() {
 
 /* ── Minimal SVG Icons matching Design mock ── */
 
-function HomeIcon({ size = 20 }: { size?: number }) {
+function JournalIcon({ size = 20 }: { size?: number }) {
 	return (
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-			<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-			<polyline points="9 22 9 12 15 12 15 22" />
+			<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+			<path d="M6 6h10M6 10h10" />
 		</svg>
 	);
 }
 
-function TimelineIcon({ size = 20 }: { size?: number }) {
+function ClockIcon({ size = 20 }: { size?: number }) {
 	return (
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-			<line x1="12" y1="2" x2="12" y2="22" />
-			<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+			<circle cx="12" cy="12" r="10" />
+			<polyline points="12 6 12 12 16 14" />
 		</svg>
 	);
 }
 
-function StoriesIcon({ size = 20 }: { size?: number }) {
+function MomentsIcon({ size = 20 }: { size?: number }) {
 	return (
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
 			<circle cx="12" cy="12" r="10" />
@@ -377,19 +334,19 @@ function StoriesIcon({ size = 20 }: { size?: number }) {
 	);
 }
 
-function JourneyIcon({ size = 20 }: { size?: number }) {
+function CollectionsIcon({ size = 20 }: { size?: number }) {
 	return (
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-			<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+			<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
 		</svg>
 	);
 }
 
-function ProfileIcon({ size = 20 }: { size?: number }) {
+function InsightsIcon({ size = 20 }: { size?: number }) {
 	return (
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-			<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-			<circle cx="12" cy="7" r="4" />
+			<path d="M3 3v18h18" />
+			<path d="m19 9-5 5-4-4-3 3" />
 		</svg>
 	);
 }
