@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { APP_CONFIG } from "@/lib/config";
 import ResearchCharts from "@/components/ResearchCharts";
+import PitchArtifacts from "@/components/PitchArtifacts";
 
 export const metadata: Metadata = {
 	title: "Solus — Pitch",
@@ -182,6 +183,22 @@ export default function PitchPage() {
 					Research shows that the constant loop of notifications, social comparison, and audience validation is directly linked to modern digital anxiety. Intentional pauses lead to immediate recovery.
 				</p>
 				<ResearchCharts />
+			</section>
+
+			<Divider />
+
+			{/* ── Interactive Pitch Deck Artifact ── */}
+			<section className="px-4 sm:px-6 py-20 sm:py-24 max-w-[680px] mx-auto">
+				<p className="text-sm text-text-muted mb-4 tracking-wide">
+					Interactive Pitch Artifact
+				</p>
+				<h2 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight text-text-primary mb-8">
+					Explore the Pitch Artifact
+				</h2>
+				<p className="text-base text-text-secondary leading-relaxed mb-8">
+					Interactive blueprint explaining product parameters, system architecture flows, and tech stacks.
+				</p>
+				<PitchArtifacts />
 			</section>
 
 			<Divider />

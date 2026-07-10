@@ -118,12 +118,29 @@ export default function StoriesCarousel() {
 								{/* Gradient active border ring */}
 								<div className="relative w-16 h-16 rounded-full p-[2.5px] bg-gradient-to-tr from-amber-500 via-rose-500 to-accent shadow-sm">
 									<div className="relative w-full h-full rounded-full overflow-hidden bg-background border-2 border-background">
-										<Image
-											src={story.mediaUrl}
-											alt="Story Thumbnail"
-											fill
-											className="object-cover"
-										/>
+										{story.mediaType === "video" ? (
+											<video
+												src={story.mediaUrl}
+												className="w-full h-full object-cover"
+												muted
+												playsInline
+											/>
+										) : story.mediaType === "audio" ? (
+											<div className="w-full h-full bg-accent/10 flex items-center justify-center text-accent">
+												<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+													<path d="M9 18V5l12-2v13" />
+													<circle cx="6" cy="18" r="3" />
+													<circle cx="18" cy="16" r="3" />
+												</svg>
+											</div>
+										) : (
+											<Image
+												src={story.mediaUrl}
+												alt="Story Thumbnail"
+												fill
+												className="object-cover"
+											/>
+										)}
 									</div>
 								</div>
 								<span className="text-[10px] text-text-muted max-w-[60px] truncate">
