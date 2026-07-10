@@ -9,7 +9,7 @@ const NAV_ITEMS = [
 	{ href: "/home", label: "Home", icon: HomeIcon },
 	{ href: "/timeline", label: "Timeline", icon: TimelineIcon },
 	{ href: "/stories", label: "Stories", icon: StoriesIcon },
-	{ href: "/journeys", label: "Journeys", icon: JourneyIcon },
+	{ href: "/journeys", label: "Collections", icon: JourneyIcon },
 	{ href: "/profile", label: "Profile", icon: ProfileIcon },
 ] as const;
 
@@ -60,7 +60,9 @@ export default function Sidebar() {
 							}`}
 							aria-current={isActive ? "page" : undefined}
 						>
-							<Icon size={18} className={isActive ? "text-accent" : "text-text-muted"} />
+							<span className={isActive ? "text-accent" : "text-text-muted"}>
+								<Icon size={18} />
+							</span>
 							{item.label}
 						</Link>
 					);

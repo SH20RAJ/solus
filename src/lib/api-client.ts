@@ -77,3 +77,9 @@ export function useApiMutation<T>(
 		}
 	);
 }
+
+/** Fetch comments for a post */
+export function useComments(postId: string | null, config?: SWRConfiguration) {
+	return useSWR(postId ? `/api/comments/post/${postId}` : null, fetcher, config);
+}
+

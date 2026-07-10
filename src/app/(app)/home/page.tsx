@@ -5,6 +5,7 @@ import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
 import { PostCardSkeleton } from "@/components/Skeleton";
 import StoriesCarousel from "@/components/StoriesCarousel";
+import CollectionsRow from "@/components/CollectionsRow";
 import { usePosts } from "@/lib/api-client";
 import { mutate } from "swr";
 import { useSession } from "@/lib/auth-client";
@@ -72,6 +73,9 @@ export default function HomePage() {
 
 			{/* Stories Carousel */}
 			<StoriesCarousel />
+
+			{/* Collections Row */}
+			<CollectionsRow />
 
 			{/* Reflection Prompt (Apple Journal style) */}
 			<Link

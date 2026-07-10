@@ -27,10 +27,10 @@ export default function JourneysPage() {
 		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
 			<header className="mb-10">
 				<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary font-serif">
-					Journeys
+					Collections
 				</h1>
 				<p className="mt-1.5 text-xs sm:text-sm text-text-muted leading-relaxed">
-					Curate your private memories into shared or private collections.
+					Organize your private memories into shared or private collections.
 				</p>
 			</header>
 
@@ -45,7 +45,7 @@ export default function JourneysPage() {
 				</div>
 			) : journeys.length === 0 ? (
 				<EmptyState
-					message="No journeys curated yet. Keep documenting until you're ready to bundle memories."
+					message="No collections created yet. Keep documenting until you're ready to bundle memories."
 				/>
 			) : (
 				<div className="space-y-4">
