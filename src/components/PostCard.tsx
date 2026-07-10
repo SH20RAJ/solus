@@ -6,6 +6,8 @@ import Link from "next/link";
 import Dropdown from "@/components/ui/Dropdown";
 import CommentsModal from "@/components/CommentsModal";
 import { formatCaption } from "@/utils/text";
+import { useLikes } from "@/lib/api-client";
+import { mutate } from "swr";
 
 interface PostCardProps {
 	id?: string;
@@ -34,11 +36,40 @@ export default function PostCard({
 	onDelete,
 }: PostCardProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
-	const [isSaved, setIsSaved] = useState(false);
 	const [showHeart, setShowHeart] = useState(false);
 	const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 	const [imageError, setImageError] = useState(false);
 	const lastTap = useRef<number>(0);
+
+	const { data: likesData } = useLikes(id ?? null);
+	const isLiked = likesData?.data?.liked ?? false;
+	const likesCount = likesData?.data?.count ?? 0;
+
+	const handleLikeToggle = async () => {
+		if (!id) return;
+		try {
+			await fetch(`/api/likes/post/${id}`, {
+				method: "POST",
+				credentials: "include",
+			});
+			mutate(`/api/likes/post/${id}`);
+		} catch {
+			// fail silently
+		}
+	};
+
+	const handleDoubleTap = () => {
+		const now = Date.now();
+		const DOUBLE_PRESS_DELAY = 300;
+		if (now - lastTap.current < DOUBLE_PRESS_DELAY) {
+			if (!isLiked) {
+				handleLikeToggle();
+			}
+			setShowHeart(true);
+			setTimeout(() => setShowHeart(false), 800);
+		}
+		lastTap.current = now;
+	};
 
 	const date = new Date(createdAt);
 	const formattedDate = date.toLocaleDateString("en-US", {
@@ -53,18 +84,6 @@ export default function PostCard({
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const mediaUrls = mediaUrl ? mediaUrl.split(",") : [];
 	const isCarousel = mediaUrls.length > 1;
-
-	// Double click to reflect/save animation
-	const handleDoubleTap = () => {
-		const now = Date.now();
-		const DOUBLE_PRESS_DELAY = 300;
-		if (now - lastTap.current < DOUBLE_PRESS_DELAY) {
-			setIsSaved(true);
-			setShowHeart(true);
-			setTimeout(() => setShowHeart(false), 800);
-		}
-		lastTap.current = now;
-	};
 
 	const getTruncatedCaption = (text: string) => {
 		const LIMIT = 120;
@@ -150,16 +169,23 @@ export default function PostCard({
 				<div className="flex items-center justify-between pt-3 border-t border-border/20">
 					<div className="flex items-center gap-6">
 						{/* Like/Reflect */}
-						<button
-							onClick={() => setIsSaved(!isSaved)}
-							className={`transition-transform active:scale-75 cursor-pointer p-0.5 rounded-full ${
-								isSaved ? "text-accent" : "text-text-muted hover:text-text-primary"
-							}`}
-						>
-							<svg width="18" height="18" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.75">
-								<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-							</svg>
-						</button>
+						<div className="flex items-center gap-1.5">
+							<button
+								onClick={handleLikeToggle}
+								className={`transition-transform active:scale-75 cursor-pointer p-0.5 rounded-full ${
+									isLiked ? "text-accent" : "text-text-muted hover:text-text-primary"
+								}`}
+							>
+								<svg width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.75">
+									<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+								</svg>
+							</button>
+							{likesCount > 0 && (
+								<span className="text-[10px] text-text-muted select-none font-mono">
+									{likesCount}
+								</span>
+							)}
+						</div>
 
 						{/* Comments */}
 						<button
@@ -379,24 +405,31 @@ export default function PostCard({
 				<div className="flex items-center justify-between pb-3 mb-2.5 border-b border-border/20">
 					<div className="flex items-center gap-4">
 						{/* Reflect/Bookmark (like replacement) */}
-						<button
-							onClick={() => setIsSaved(!isSaved)}
-							className={`transition-transform active:scale-75 cursor-pointer p-0.5 rounded-full ${
-								isSaved ? "text-accent" : "text-text-muted hover:text-text-primary"
-							}`}
-							title={isSaved ? "Reflected" : "Reflect"}
-						>
-							<svg
-								width="20"
-								height="20"
-								viewBox="0 0 24 24"
-								fill={isSaved ? "currentColor" : "none"}
-								stroke="currentColor"
-								strokeWidth="1.75"
+						<div className="flex items-center gap-1.5">
+							<button
+								onClick={handleLikeToggle}
+								className={`transition-transform active:scale-75 cursor-pointer p-0.5 rounded-full ${
+									isLiked ? "text-accent" : "text-text-muted hover:text-text-primary"
+								}`}
+								title={isLiked ? "Reflected" : "Reflect"}
 							>
-								<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-							</svg>
-						</button>
+								<svg
+									width="20"
+									height="20"
+									viewBox="0 0 24 24"
+									fill={isLiked ? "currentColor" : "none"}
+									stroke="currentColor"
+									strokeWidth="1.75"
+								>
+									<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+								</svg>
+							</button>
+							{likesCount > 0 && (
+								<span className="text-[10px] text-text-muted select-none font-mono">
+									{likesCount}
+								</span>
+							)}
+						</div>
 
 						{/* Comments trigger */}
 						<button
@@ -422,9 +455,18 @@ export default function PostCard({
 						</button>
 					</div>
 
-					<span className="text-[10px] text-text-muted font-mono uppercase tracking-wider">
-						{formattedDate}
-					</span>
+					{id ? (
+						<Link
+							href={`/posts/${id}`}
+							className="text-[10px] text-text-muted hover:text-accent font-mono uppercase tracking-wider transition-colors duration-200"
+						>
+							{formattedDate}
+						</Link>
+					) : (
+						<span className="text-[10px] text-text-muted font-mono uppercase tracking-wider">
+							{formattedDate}
+						</span>
+					)}
 				</div>
 
 				{/* Caption Block */}

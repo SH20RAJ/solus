@@ -127,3 +127,14 @@ export const comment = pgTable("comment", {
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const postLike = pgTable("post_like", {
+	id: text("id").primaryKey(),
+	postId: text("post_id")
+		.notNull()
+		.references(() => post.id, { onDelete: "cascade" }),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+

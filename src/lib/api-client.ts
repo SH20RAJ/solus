@@ -83,3 +83,8 @@ export function useComments(postId: string | null, config?: SWRConfiguration) {
 	return useSWR(postId ? `/api/comments/post/${postId}` : null, fetcher, config);
 }
 
+/** Fetch likes count and user liked status for a post */
+export function useLikes(postId: string | null, config?: SWRConfiguration) {
+	return useSWR(postId ? `/api/likes/post/${postId}` : null, fetcher, config);
+}
+

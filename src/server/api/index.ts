@@ -6,6 +6,7 @@ import stories from "@/server/api/routes/stories";
 import collections from "@/server/api/routes/collections";
 import upload from "@/server/api/routes/upload";
 import comments from "@/server/api/routes/comments";
+import likes from "@/server/api/routes/likes";
 
 const app = new Hono().basePath("/api");
 
@@ -34,6 +35,7 @@ app.route("/stories", stories);
 app.route("/collections", collections);
 app.route("/upload", upload);
 app.route("/comments", comments);
+app.route("/likes", likes);
 
 export type AppType = typeof app;
 export default app;
