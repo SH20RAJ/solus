@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  <img src="public/poster.png" alt="Solus App Banner Poster" width="100%" />
+</p>
+
+<p align="center">
   A private social network where you document your life without an audience — and share your story only when you're ready.
 </p>
 
@@ -171,6 +175,22 @@ bun run deploy
 ```
 
 Deploys to [solus.shraj.workers.dev](https://solus.shraj.workers.dev).
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="public/screenshots/landing.png" alt="Landing Page" width="48%" />
+  <img src="public/screenshots/home.png" alt="Home Feed" width="48%" />
+</p>
+<p align="center">
+  <img src="public/screenshots/features.png" alt="Features Overview" width="48%" />
+  <img src="public/screenshots/how_it_works.png" alt="How it Works" width="48%" />
+</p>
+<p align="center">
+  <img src="public/screenshots/use_cases.png" alt="Use Cases" width="98%" />
+</p>
 
 ---
 

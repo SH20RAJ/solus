@@ -7,11 +7,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
 
 const NAV_ITEMS = [
-	{ href: "/home", label: "Journal", icon: JournalIcon },
+	{ href: "/home", label: "Home", icon: HomeIcon },
 	{ href: "/timeline", label: "Timeline", icon: ClockIcon },
-	{ href: "/stories", label: "Moments", icon: MomentsIcon },
+	{ href: "/stories", label: "Stories", icon: StoriesIcon },
 	{ href: "/collections", label: "Collections", icon: CollectionsIcon },
-	{ href: "/profile", label: "Insights", icon: InsightsIcon },
+	{ href: "/profile", label: "Profile", icon: ProfileIcon },
 ] as const;
 
 export default function Sidebar() {
@@ -306,11 +306,11 @@ export default function Sidebar() {
 
 /* ── Minimal SVG Icons matching Design mock ── */
 
-function JournalIcon({ size = 20 }: { size?: number }) {
+function HomeIcon({ size = 20 }: { size?: number }) {
 	return (
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-			<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
-			<path d="M6 6h10M6 10h10" />
+			<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+			<polyline points="9 22 9 12 15 12 15 22" />
 		</svg>
 	);
 }
@@ -324,7 +324,7 @@ function ClockIcon({ size = 20 }: { size?: number }) {
 	);
 }
 
-function MomentsIcon({ size = 20 }: { size?: number }) {
+function StoriesIcon({ size = 20 }: { size?: number }) {
 	return (
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
 			<circle cx="12" cy="12" r="10" />
@@ -341,11 +341,11 @@ function CollectionsIcon({ size = 20 }: { size?: number }) {
 	);
 }
 
-function InsightsIcon({ size = 20 }: { size?: number }) {
+function ProfileIcon({ size = 20 }: { size?: number }) {
 	return (
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-			<path d="M3 3v18h18" />
-			<path d="m19 9-5 5-4-4-3 3" />
+			<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+			<circle cx="12" cy="7" r="4" />
 		</svg>
 	);
 }
