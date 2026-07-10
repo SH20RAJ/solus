@@ -97,7 +97,7 @@ export default function CommentsModal({ isOpen, onClose, postId }: CommentsModal
 			{/* Header */}
 			<div className="px-6 py-4 border-b border-border/20 flex items-center justify-between shrink-0">
 				<h2 className="text-sm font-bold tracking-tight text-text-primary uppercase font-mono">
-					Reflections & Notes
+					Comments
 				</h2>
 			</div>
 
@@ -120,7 +120,7 @@ export default function CommentsModal({ isOpen, onClose, postId }: CommentsModal
 						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mb-2.5">
 							<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
 						</svg>
-						<p className="text-xs">No reflections yet. Add your thoughts below.</p>
+						<p className="text-xs">No comments yet. Write down your private feedback.</p>
 					</div>
 				) : (
 					rootComments.map((comment) => (
@@ -246,7 +246,7 @@ export default function CommentsModal({ isOpen, onClose, postId }: CommentsModal
 						type="text"
 						value={newComment}
 						onChange={(e) => setNewComment(e.target.value)}
-						placeholder="Add your note or reflection..."
+						placeholder="Write a private comment..."
 						className="flex-1 h-9 px-4 rounded-xl border border-border/40 bg-card text-xs focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent"
 					/>
 					<button
