@@ -2,6 +2,7 @@ import Image from "next/image";
 
 interface StoryCircleProps {
 	imageUrl: string;
+	mediaType?: string | null;
 	label?: string;
 	isNew?: boolean;
 	onClick?: () => void;
@@ -9,10 +10,13 @@ interface StoryCircleProps {
 
 export default function StoryCircle({
 	imageUrl,
+	mediaType,
 	label,
 	isNew = false,
 	onClick,
 }: StoryCircleProps) {
+	const isVideo = mediaType === "video" || imageUrl.endsWith(".mp4") || imageUrl.includes("mp4") || imageUrl.includes("webm");
+
 	return (
 		<button
 			onClick={onClick}
@@ -26,13 +30,22 @@ export default function StoryCircle({
 						: "ring-1 ring-border"
 				}`}
 			>
-				<Image
-					src={imageUrl}
-					alt={label ?? "Story"}
-					fill
-					className="object-cover"
-					sizes="64px"
-				/>
+				{isVideo ? (
+					<video
+						src={imageUrl}
+						className="w-full h-full object-cover pointer-events-none"
+						muted
+						playsInline
+					/>
+				) : (
+					<Image
+						src={imageUrl}
+						alt={label ?? "Story"}
+						fill
+						className="object-cover"
+						sizes="64px"
+					/>
+				)}
 			</div>
 			{label && (
 				<span className="text-xs text-text-muted truncate max-w-[64px]">

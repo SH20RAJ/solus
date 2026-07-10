@@ -8,7 +8,7 @@ const DATABASE_URL =
 	"postgresql://neondb_owner:npg_OkHz8e6Dldgn@ep-broad-dream-aokhdt5q-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 
 async function main() {
-	console.log("🌱 Seeding database with 22+ premium reflections...");
+	console.log("🌱 Seeding database with 42 premium reflections...");
 	const sql = neon(DATABASE_URL);
 	const db = drizzle({ client: sql, schema });
 
@@ -41,7 +41,7 @@ async function main() {
 	await db.delete(schema.comment);
 	await db.delete(schema.post).where(eq(schema.post.userId, userId));
 
-	// 3. Define 22+ Posts (Text, Image, Video, Audio)
+	// 3. Define 42 Posts
 	const postsData = [
 		{
 			caption: "Leave everyone. Don't leave yourself. The quiet moments are where we rediscover who we are when nobody is watching. Solus is becoming my digital sanctuary. #detox #peaceful #mindful",
@@ -132,7 +132,7 @@ async function main() {
 			offsetDays: 10
 		},
 		{
-			caption: "Stargazing in the desert. No light pollution, just millions of stars mapping the cosmic canvas. #nature #peaceful",
+			caption: "Stargazing in the desert. No light pollution, just millions of stars mapping the cosmic canvas. #nature #stargazing #peaceful",
 			mediaUrl: "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=800&auto=format&fit=crop",
 			mediaType: "image",
 			location: "Yosemite Park",
@@ -218,6 +218,166 @@ async function main() {
 			location: "Lake Geneva",
 			mood: "Calm",
 			offsetDays: 21
+		},
+		{
+			caption: "Reflecting on digital minimalism. Deleting major social apps was the best design decision I ever made for my brain. #detox #mentalhealth",
+			mediaUrl: null,
+			mediaType: null,
+			location: "Home Studio",
+			mood: "Peaceful",
+			offsetDays: 22
+		},
+		{
+			caption: "A misty morning hike up Yosemite. The path is steep, but the fog adds a sense of magic. #nature #travel #morning",
+			mediaUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Yosemite Park",
+			mood: "Inspired",
+			offsetDays: 23
+		},
+		{
+			caption: "Exploring old alleyways in Rome. History speaks through these cobblestones. #travel #journal",
+			mediaUrl: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Rome, Italy",
+			mood: "Inspired",
+			offsetDays: 24
+		},
+		{
+			caption: "Quiet studio recording sessions. The microphone captures everything — even the silence between notes. #creative #music",
+			mediaUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+			mediaType: "audio",
+			location: "Home Studio",
+			mood: "Reflective",
+			offsetDays: 25
+		},
+		{
+			caption: "Sunset overlooking the Amalfi Coast. Absolute visual bliss. #travel #sunset #peaceful",
+			mediaUrl: "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Amalfi Coast, Italy",
+			mood: "Grateful",
+			offsetDays: 26
+		},
+		{
+			caption: "A walk through the botanic gardens in winter. Greenhouses are like capsules of warm life in the cold. #nature #mindful",
+			mediaUrl: null,
+			mediaType: null,
+			location: "Bavaria, Germany",
+			mood: "Calm",
+			offsetDays: 27
+		},
+		{
+			caption: "Freshly brewed green tea and some light journaling. Putting thoughts into words makes them tangible. #morning #journal",
+			mediaUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Home Studio",
+			mood: "Peaceful",
+			offsetDays: 28
+		},
+		{
+			caption: "Listening to the sound of waves hitting the cliffs. A raw demonstration of nature's power. #nature #travel",
+			mediaUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+			mediaType: "video",
+			location: "Amalfi Coast, Italy",
+			mood: "Awe",
+			offsetDays: 29
+		},
+		{
+			caption: "Late night code push. Clean refactoring always feels like playing a perfect game of tetris. #creative #thoughts",
+			mediaUrl: null,
+			mediaType: null,
+			location: "Home Studio",
+			mood: "Excited",
+			offsetDays: 30
+		},
+		{
+			caption: "Sunset at the lake dock. The colors fade from orange to deep royal blue. #evening #nature #peaceful",
+			mediaUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Lake Geneva",
+			mood: "Calm",
+			offsetDays: 31
+		},
+		{
+			caption: "Audio log: Thinking out loud about my goals for the upcoming quarter. Time is moving fast, must align priorities. #growth #thoughts",
+			mediaUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+			mediaType: "audio",
+			location: "Home Studio",
+			mood: "Reflective",
+			offsetDays: 32
+		},
+		{
+			caption: "The stillness of the alpine meadows. The snow is melting slowly. #nature #mountains",
+			mediaUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Swiss Alps",
+			mood: "Peaceful",
+			offsetDays: 33
+		},
+		{
+			caption: "Reading under an old oak tree. The wind rustling through the leaves is the best ambient sound. #mindful #nature",
+			mediaUrl: null,
+			mediaType: null,
+			location: "Bavaria, Germany",
+			mood: "Grateful",
+			offsetDays: 34
+		},
+		{
+			caption: "Fresh market fruits in Rome. Colors, sounds, smells — a vivid sensory experience. #travel #Rome",
+			mediaUrl: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Rome, Italy",
+			mood: "Joyful",
+			offsetDays: 35
+		},
+		{
+			caption: "Exploring the geishas' historic district at night. The wood architecture is stunning. #travel #Kyoto",
+			mediaUrl: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Kyoto, Japan",
+			mood: "Inspired",
+			offsetDays: 36
+		},
+		{
+			caption: "Waking up early to catch the mountain sunrise. The cold air keeps you fully awake. #morning #nature",
+			mediaUrl: "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Swiss Alps",
+			mood: "Awe",
+			offsetDays: 37
+		},
+		{
+			caption: "A short text reflection: Be kind to your past self. You did the best you could with the tools you had. #growth #mindful",
+			mediaUrl: null,
+			mediaType: null,
+			location: "Home Studio",
+			mood: "Reflective",
+			offsetDays: 38
+		},
+		{
+			caption: "Rain tapping on the roof. Perfect day to stay inside, drink tea, and work on creative ideas. #rain #creative",
+			mediaUrl: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Home Studio",
+			mood: "Calm",
+			offsetDays: 39
+		},
+		{
+			caption: "A walk around the city canals at dusk. The lights are starting to blink. #evening #travel",
+			mediaUrl: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&auto=format&fit=crop",
+			mediaType: "image",
+			location: "Paris, France",
+			mood: "Calm",
+			offsetDays: 40
+		},
+		{
+			caption: "Final entry of the travel cycle. Grateful for the people I met, the places I saw, and the silence I documented. #travel #gratitude #growth",
+			mediaUrl: null,
+			mediaType: null,
+			location: "Home Studio",
+			mood: "Grateful",
+			offsetDays: 41
 		}
 	];
 
@@ -226,8 +386,7 @@ async function main() {
 	for (const data of postsData) {
 		const id = crypto.randomUUID();
 		postIds.push(id);
-		// Staggered timestamps to show nicely in chronological feed
-		const createdAt = new Date(Date.now() - data.offsetDays * 24 * 60 * 60 * 1000 - 1000);
+		const createdAt = new Date(Date.now() - data.offsetDays * 24 * 60 * 60 * 1000 - 2000);
 		await db.insert(schema.post).values({
 			id,
 			userId,
