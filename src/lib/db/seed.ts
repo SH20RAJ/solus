@@ -276,8 +276,8 @@ async function main() {
 			offsetDays: 28
 		},
 		{
-			caption: "Listening to the sound of waves hitting the cliffs. A raw demonstration of nature's power. #nature #travel",
-			mediaUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+			caption: "Listening to the sound of waves hitting the cliffs. A raw demonstration of nature's power. #nature #travel #reels",
+			mediaUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
 			mediaType: "video",
 			location: "Amalfi Coast, Italy",
 			mood: "Awe",
@@ -378,6 +378,22 @@ async function main() {
 			location: "Home Studio",
 			mood: "Grateful",
 			offsetDays: 41
+		},
+		{
+			caption: "A late night drive through city tunnels capturing the dynamic light streaks. Meditative state of wheels. #creative #night #reels",
+			mediaUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+			mediaType: "video",
+			location: "Tokyo, Japan",
+			mood: "Excited",
+			offsetDays: 0
+		},
+		{
+			caption: "Staring out the window during transit. Tunnels, lights, tracks. An abstract visual journal. #travel #transit #reels",
+			mediaUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+			mediaType: "video",
+			location: "Seoul, South Korea",
+			mood: "Reflective",
+			offsetDays: 1
 		}
 	];
 
