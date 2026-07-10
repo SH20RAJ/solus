@@ -61,9 +61,8 @@ export default function PostDetailPageClient() {
 		return (
 			<div className="py-10 sm:py-16 max-w-[640px] mx-auto select-none">
 				<EmptyState
-					title="Reflection not found"
-					description="This private entry may have been deleted or does not exist."
-					actionText="Back to Feed"
+					message="This private post may have been deleted or does not exist."
+					actionLabel="Back to Feed"
 					actionHref="/home"
 				/>
 			</div>
