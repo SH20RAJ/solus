@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { APP_CONFIG } from "@/lib/config";
 
 export default function LandingPage() {
 	const jsonLd = {
@@ -38,13 +39,19 @@ export default function LandingPage() {
 				</div>
 				<div className="flex items-center gap-5">
 					<Link
+						href="/pitch"
+						className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
+					>
+						Pitch
+					</Link>
+					<Link
 						href="/login"
 						className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
 					>
 						Sign In
 					</Link>
 					<a
-						href="https://github.com/SH20RAJ/solus"
+						href={APP_CONFIG.githubUrl}
 						target="_blank"
 						rel="noopener noreferrer"
 						className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
@@ -70,13 +77,20 @@ export default function LandingPage() {
 					and memories — everything stays private. Share your story only
 					when you&apos;re ready.
 				</p>
-				<div className="mt-10">
+				<div className="mt-10 flex flex-wrap gap-4">
 					<Link
 						id="hero-cta"
 						href="/login"
 						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
 					>
 						Start Your Journey
+					</Link>
+					<Link
+						id="hero-pitch-cta"
+						href="/pitch"
+						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] border border-border/40 text-text-primary text-sm font-medium transition-colors duration-200 ease-out hover:bg-card cursor-pointer"
+					>
+						Read the Pitch
 					</Link>
 				</div>
 			</section>
@@ -399,7 +413,7 @@ export default function LandingPage() {
 					</p>
 					<div className="flex items-center gap-4 text-xs text-text-muted">
 						<a
-							href="https://github.com/SH20RAJ/solus"
+							href={APP_CONFIG.githubUrl}
 							target="_blank"
 							rel="noopener noreferrer"
 							className="hover:text-text-primary transition-colors duration-200 ease-out"

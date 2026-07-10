@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { APP_CONFIG } from "@/lib/config";
 
 export const metadata: Metadata = {
 	title: "Solus — Pitch",
@@ -14,7 +15,7 @@ export default function PitchPage() {
 		"@type": "ItemPage",
 		"name": "Solus Pitch — The Personal Social Network",
 		"description": "Document your life without an audience, share your story when you're ready.",
-		"url": "https://solus.shraj.workers.dev/pitch",
+		"url": `${APP_CONFIG.siteUrl}/pitch`,
 		"mainEntity": {
 			"@type": "Product",
 			"name": "Solus",

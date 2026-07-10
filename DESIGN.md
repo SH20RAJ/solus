@@ -814,21 +814,17 @@ Greeting
 
 Good Morning.
 
-Small subtitle
+Small subtitle (date)
 
 Below
 
-Today's memories
+Stories Carousel: Horizontal row showing "Your Story" (to capture new moments) and active stories inside gradient borders (Instagram style), clicking opens a 5-second auto-advancing fullscreen viewer.
+
+Reflection Prompt (Apple Journal style card to quickly write reflections)
 
 Then
 
-Timeline
-
-Floating FAB
-
-+
-
-Nothing else.
+Timeline Feed: Vertical chronological feed of large cards (Instagram style list).
 
 ---
 
@@ -846,11 +842,11 @@ Minimal chrome
 
 # Stories
 
-Horizontal
+Horizontal carousel at the top of the feed page.
 
 Large circles
 
-Soft border
+Soft border / Colored ring gradients for active stories.
 
 No viewer count
 
@@ -858,27 +854,25 @@ No seen count
 
 No reactions
 
+Auto-advancing progress bar indicator at the top during fullscreen views.
+
+Tap left/right hotspots to navigate.
+
 ---
 
 # Post Design
 
-Photo (should float inside the card container with 16px rounded corners, aspect-[4/3] landscape)
+Instagram-style layout:
+- User profile header (avatar, name, location, actions dots menu).
+- Photo/video media container with double-tap support (triggers a visual heart pop animation and reflects/bookmarks the post).
+- Action row containing the reflect/bookmark trigger, export button, and date indicator.
+- Caption block with bold username prepending the text and collapsible "more" truncation.
 
-Caption (uses font-serif/Lora in italic for text-only reflections to look like a premium book/diary; normal font-sans for posts with photos)
+No likes counters.
 
-Date
+No public comments section.
 
-Location (optional)
-
-Mood (optional, styled as a pill badge)
-
-Nothing else.
-
-No likes.
-
-No comments.
-
-No shares.
+No public shares.
 
 ---
 
@@ -1244,9 +1238,11 @@ Long-pressing a post slightly lifts it with a soft shadow before showing actions
 
 ## Profile
 
-The avatar enlarges by only 2–3%.
+Profile Details (avatar on the left, user metadata, and statistics grid for memories and journeys on the right).
 
-Almost imperceptible.
+Tabs Switching Layout (Grid View and Feed View tabs, styled as monospaced buttons with accent line indicators):
+- Grid: shows 3-column square photo thumbnail gallery.
+- Feed: shows standard chronological list of PostCards.
 
 ---
 

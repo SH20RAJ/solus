@@ -4,7 +4,10 @@ import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
 import { PostCardSkeleton } from "@/components/Skeleton";
+import StoriesCarousel from "@/components/StoriesCarousel";
 import { usePosts } from "@/lib/api-client";
+import { mutate } from "swr";
+import { useSession } from "@/lib/auth-client";
 
 function getGreeting(): string {
 	const hour = new Date().getHours();
@@ -37,8 +40,23 @@ interface PostsResponse {
 }
 
 export default function HomePage() {
-	const { data, isLoading } = usePosts();
-	const posts = (data as PostsResponse)?.data ?? [];
+	const { data: session } = useSession();
+	const { data: postsData, isLoading } = usePosts();
+	const posts = (postsData as PostsResponse)?.data ?? [];
+
+	const handleDelete = async (postId: string) => {
+		if (confirm("Are you sure you want to delete this memory?")) {
+			try {
+				await fetch(`/api/posts/${postId}`, {
+					method: "DELETE",
+					credentials: "include",
+				});
+				mutate("/api/posts");
+			} catch {
+				// Silently fail or log in dev
+			}
+		}
+	};
 
 	return (
 		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
@@ -51,6 +69,9 @@ export default function HomePage() {
 					{getGreeting()}
 				</h1>
 			</header>
+
+			{/* Stories Carousel */}
+			<StoriesCarousel />
 
 			{/* Reflection Prompt (Apple Journal style) */}
 			<Link
@@ -107,12 +128,16 @@ export default function HomePage() {
 						{posts.map((post) => (
 							<PostCard
 								key={post.id}
+								id={post.id}
+								username={session?.user?.name ?? "You"}
+								userImage={session?.user?.image}
 								mediaUrl={post.mediaUrl}
 								mediaType={post.mediaType}
 								caption={post.caption}
 								location={post.location}
 								mood={post.mood}
 								createdAt={post.createdAt}
+								onDelete={handleDelete}
 							/>
 						))}
 					</div>

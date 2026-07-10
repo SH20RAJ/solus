@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Lora } from "next/font/google";
+import { APP_CONFIG } from "@/lib/config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,9 +25,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-	title: "Solus — Leave everyone. Don't leave yourself.",
-	description:
-		"A private social network where you document your life without an audience and share your story only when you're ready.",
+	title: APP_CONFIG.title,
+	description: APP_CONFIG.description,
 	manifest: "/manifest.json",
 	icons: {
 		icon: [
@@ -37,27 +37,25 @@ export const metadata: Metadata = {
 		apple: "/apple-touch-icon.png",
 	},
 	openGraph: {
-		title: "Solus — Leave everyone. Don't leave yourself.",
-		description:
-			"A private social network where you document your life without an audience.",
-		url: "https://solus.shraj.workers.dev",
+		title: APP_CONFIG.title,
+		description: APP_CONFIG.description,
+		url: APP_CONFIG.siteUrl,
 		siteName: "Solus",
 		images: [
 			{
-				url: "https://solus.shraj.workers.dev/og-image.png",
+				url: `${APP_CONFIG.siteUrl}${APP_CONFIG.ogImage}`,
 				width: 1200,
 				height: 630,
-				alt: "Solus — Leave everyone. Don't leave yourself.",
+				alt: APP_CONFIG.title,
 			},
 		],
 		type: "website",
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "Solus — Leave everyone. Don't leave yourself.",
-		description:
-			"A private social network where you document your life without an audience.",
-		images: ["https://solus.shraj.workers.dev/og-image.png"],
+		title: APP_CONFIG.title,
+		description: APP_CONFIG.description,
+		images: [`${APP_CONFIG.siteUrl}${APP_CONFIG.ogImage}`],
 	},
 };
 
@@ -70,9 +68,9 @@ export default function RootLayout({
 		"@context": "https://schema.org",
 		"@type": "WebSite",
 		"name": "Solus",
-		"url": "https://solus.shraj.workers.dev",
-		"description": "A private social network where you document your life without an audience.",
-		"image": "https://solus.shraj.workers.dev/og-image.png"
+		"url": APP_CONFIG.siteUrl,
+		"description": APP_CONFIG.description,
+		"image": `${APP_CONFIG.siteUrl}${APP_CONFIG.ogImage}`
 	};
 
 	return (
