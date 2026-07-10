@@ -56,18 +56,6 @@ export default function LoginPage() {
 					</svg>
 					Continue with Google
 				</button>
-
-				<button
-					id="apple-signin"
-					onClick={handleAppleSignIn}
-					className="w-full h-12 rounded-[12px] bg-text-primary text-background text-sm font-medium flex items-center justify-center gap-3 transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
-				>
-					<svg width="16" height="18" viewBox="0 0 16 20" fill="currentColor" aria-hidden="true">
-						<path d="M13.545 10.239c-.022-2.234 1.823-3.306 1.906-3.356-.038-.056-1.032-1.586-2.707-1.906-.251-.03-.502-.045-.753-.045-1.082 0-2.023.447-2.623.447-.648 0-1.507-.436-2.478-.424C5.243 4.973 3.745 5.903 2.88 7.335 1.12 10.246 2.42 14.567 4.122 16.81c.813 1.098 1.78 2.33 3.05 2.286 1.224-.049 1.687-.792 3.168-.792s1.896.792 3.192.767c1.316-.025 2.152-1.12 2.957-2.222.932-1.275 1.316-2.51 1.34-2.574-.03-.013-2.568-1.005-2.594-3.983-.024-2.489 2.003-3.684 2.095-3.746-1.158-1.702-2.95-1.89-3.577-1.93-.7-.05-1.42.123-2.108.323z" />
-						<path d="M11.19 3.31c.675-.817 1.13-1.953 1.006-3.085C11.15.277 9.888.973 9.185 1.79c-.63.728-1.182 1.892-1.034 3.008C9.27 4.882 10.514 4.126 11.19 3.31z" />
-					</svg>
-					Continue with Apple
-				</button>
 			</div>
 
 			<p className="mt-8 text-xs text-text-muted text-center leading-relaxed">

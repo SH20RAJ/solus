@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { APP_CONFIG } from "@/lib/config";
+import ResearchCharts from "@/components/ResearchCharts";
 
 export const metadata: Metadata = {
 	title: "Solus — Pitch",
@@ -165,6 +166,22 @@ export default function PitchPage() {
 				<p className="mt-4 text-lg text-text-secondary leading-relaxed">
 					They need a place where they can simply exist.
 				</p>
+			</section>
+
+			<Divider />
+
+			{/* ── Backed by Science Data Section ── */}
+			<section className="px-4 sm:px-6 py-20 sm:py-24 max-w-[680px] mx-auto">
+				<p className="text-sm text-text-muted mb-4 tracking-wide">
+					Backed by science
+				</p>
+				<h2 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight text-text-primary mb-8">
+					The psychological cost of the audience.
+				</h2>
+				<p className="text-base text-text-secondary leading-relaxed mb-8">
+					Research shows that the constant loop of notifications, social comparison, and audience validation is directly linked to modern digital anxiety. Intentional pauses lead to immediate recovery.
+				</p>
+				<ResearchCharts />
 			</section>
 
 			<Divider />

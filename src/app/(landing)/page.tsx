@@ -411,7 +411,16 @@ export default function LandingPage() {
 					<p className="text-xs text-text-muted text-center sm:text-left">
 						Live first. Share later.
 					</p>
-					<div className="flex items-center gap-4 text-xs text-text-muted">
+					<div className="flex items-center gap-4 text-xs text-text-muted flex-wrap justify-center">
+						<Link href="/contact" className="hover:text-text-primary transition-colors duration-200">
+							Contact
+						</Link>
+						<Link href="/privacy" className="hover:text-text-primary transition-colors duration-200">
+							Privacy
+						</Link>
+						<Link href="/terms" className="hover:text-text-primary transition-colors duration-200">
+							Terms
+						</Link>
 						<a
 							href={APP_CONFIG.githubUrl}
 							target="_blank"
