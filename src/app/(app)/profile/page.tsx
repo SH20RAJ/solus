@@ -72,7 +72,7 @@ export default function ProfilePage() {
 	}
 
 	return (
-		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up select-none">
+		<div className="py-8 sm:py-12 w-full animate-slide-up select-none">
 			{/* Instagram-style Profile Header */}
 			<div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-12">
 				{session?.user?.image ? (

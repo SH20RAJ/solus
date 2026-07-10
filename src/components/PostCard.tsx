@@ -35,6 +35,7 @@ export default function PostCard({
 	const [isSaved, setIsSaved] = useState(false);
 	const [showHeart, setShowHeart] = useState(false);
 	const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+	const [imageError, setImageError] = useState(false);
 	const lastTap = useRef<number>(0);
 
 	const date = new Date(createdAt);
@@ -44,8 +45,12 @@ export default function PostCard({
 		year: "numeric",
 	});
 
-	const hasMedia = !!mediaUrl;
+	const hasMedia = !!mediaUrl && !imageError;
 	const isVideo = mediaType === "video";
+	const isAudio = mediaType === "audio";
+	const [currentSlide, setCurrentSlide] = useState(0);
+	const mediaUrls = mediaUrl ? mediaUrl.split(",") : [];
+	const isCarousel = mediaUrls.length > 1;
 
 	// Double click to reflect/save animation
 	const handleDoubleTap = () => {
@@ -141,7 +146,7 @@ export default function PostCard({
 
 				{/* Tweet text content */}
 				{caption && (
-					<p className="text-base sm:text-lg text-text-primary leading-relaxed font-sans mt-2 mb-6">
+					<p className="text-base sm:text-lg text-text-primary leading-relaxed font-serif italic mt-2 mb-6">
 						{caption}
 					</p>
 				)}
@@ -254,22 +259,99 @@ export default function PostCard({
 			{/* Photo/Video with Double-Tap Support */}
 			{mediaUrl && (
 				<div
-					onClick={handleDoubleTap}
-					className="relative aspect-square w-full bg-surface overflow-hidden cursor-pointer"
+					onClick={isAudio ? undefined : handleDoubleTap}
+					className={`relative w-full bg-surface overflow-hidden ${isAudio ? "py-4 border-y border-border/10" : "aspect-square cursor-pointer"}`}
 				>
-					{isVideo ? (
+					{isAudio ? (
+						<div className="flex flex-col items-center justify-center p-6 gap-3 w-full bg-card/45 rounded-xl border border-border/20 max-w-[90%] mx-auto shadow-sm">
+							<div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+									<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+									<path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+									<line x1="12" y1="19" x2="12" y2="22" />
+								</svg>
+							</div>
+
+							<audio src={mediaUrl} controls className="w-full mt-2" onError={() => setImageError(true)} />
+
+							<span className="text-[10px] uppercase tracking-wider font-mono text-text-muted">
+								Voice Note reflection
+							</span>
+						</div>
+					) : isCarousel ? (
+						<div className="relative w-full h-full">
+							{/* Slider track */}
+							<div
+								className="flex w-full h-full transition-transform duration-300 ease-out"
+								style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+							>
+								{mediaUrls.map((url, idx) => (
+									<div key={idx} className="relative w-full h-full shrink-0">
+										<Image
+											src={url}
+											alt={`${caption ?? "Memory"} - Slide ${idx + 1}`}
+											fill
+											className="object-cover"
+											sizes="(max-width: 768px) 100vw, 760px"
+											onError={() => setImageError(true)}
+										/>
+									</div>
+								))}
+							</div>
+
+							{/* Slider arrows */}
+							{currentSlide > 0 && (
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										setCurrentSlide(currentSlide - 1);
+									}}
+									className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/55 text-white flex items-center justify-center cursor-pointer hover:bg-black/75 transition-all text-sm font-bold z-10"
+								>
+									‹
+								</button>
+							)}
+							{currentSlide < mediaUrls.length - 1 && (
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										setCurrentSlide(currentSlide + 1);
+									}}
+									className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/55 text-white flex items-center justify-center cursor-pointer hover:bg-black/75 transition-all text-sm font-bold z-10"
+								>
+									›
+								</button>
+							)}
+
+							{/* Dots */}
+							<div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10">
+								{mediaUrls.map((_, i) => (
+									<div
+										key={i}
+										className={`w-1.5 h-1.5 rounded-full transition-all ${
+											i === currentSlide ? "bg-accent scale-[1.2]" : "bg-white/40"
+										}`}
+									/>
+								))}
+							</div>
+						</div>
+					) : isVideo ? (
 						<video
 							src={mediaUrl}
 							controls
 							className="w-full h-full object-cover"
+							onError={() => setImageError(true)}
 						/>
 					) : (
 						<Image
-							src={mediaUrl}
+							src={mediaUrls[0] || mediaUrl}
 							alt={caption ?? "Memory"}
 							fill
 							className="object-cover"
 							sizes="(max-width: 768px) 100vw, 760px"
+							onError={() => setImageError(true)}
 						/>
 					)}
 
@@ -349,8 +431,8 @@ export default function PostCard({
 
 				{/* Caption Block */}
 				{caption && (
-					<p className="text-sm text-text-primary leading-relaxed font-sans">
-						<span className="font-bold mr-2 text-xs">{username}</span>
+					<p className="text-sm text-text-primary leading-relaxed font-serif">
+						<span className="font-bold mr-2 text-xs font-sans">{username}</span>
 						{truncateCaption(caption)}
 					</p>
 				)}

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useSession } from "@/lib/auth-client";
 import { useStories } from "@/lib/api-client";
 import Modal from "@/components/ui/Modal";
+import Link from "next/link";
 
 interface Story {
 	id: string;
@@ -76,27 +77,29 @@ export default function StoriesCarousel() {
 		<div className="w-full py-4 border-b border-border/20 mb-6 bg-card/10 select-none">
 			<div className="flex items-center gap-4 overflow-x-auto px-4 scrollbar-none">
 				{/* "Add Story" bubble */}
-				<div className="flex flex-col items-center gap-1.5 shrink-0">
-					<div className="relative w-14 h-14 rounded-full overflow-hidden bg-surface border border-border/40 flex items-center justify-center cursor-pointer">
-						{session?.user?.image ? (
-							<Image
-								src={session.user.image}
-								alt="Your Profile"
-								fill
-								className="object-cover"
-							/>
-						) : (
-							<span className="text-sm font-semibold text-text-muted">
-								{session?.user?.name?.charAt(0).toUpperCase() ?? "+"}
-							</span>
-						)}
-						{/* Blue Plus icon */}
-						<div className="absolute bottom-0 right-0 w-4.5 h-4.5 rounded-full bg-accent border-2 border-background flex items-center justify-center text-white text-[10px] font-bold">
+				<Link href="/create" className="flex flex-col items-center gap-1.5 shrink-0 group">
+					<div className="relative w-16 h-16 p-[2.5px] rounded-full bg-border/40 group-hover:bg-accent/40 transition-colors flex items-center justify-center cursor-pointer">
+						<div className="relative w-full h-full rounded-full overflow-hidden bg-surface flex items-center justify-center">
+							{session?.user?.image ? (
+								<Image
+									src={session.user.image}
+									alt="Your Profile"
+									fill
+									className="object-cover"
+								/>
+							) : (
+								<span className="text-sm font-semibold text-text-muted">
+									{session?.user?.name?.charAt(0).toUpperCase() ?? "+"}
+								</span>
+							)}
+						</div>
+						{/* Accent plus icon */}
+						<div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-accent border-2 border-background flex items-center justify-center text-background text-xs font-bold shadow-sm">
 							+
 						</div>
 					</div>
-					<span className="text-[10px] text-text-muted">Your Story</span>
-				</div>
+					<span className="text-[10px] text-text-muted group-hover:text-text-primary transition-colors">Your Story</span>
+				</Link>
 
 				{/* Active stories */}
 				{isLoading
@@ -113,7 +116,7 @@ export default function StoriesCarousel() {
 								className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
 							>
 								{/* Gradient active border ring */}
-								<div className="relative w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-accent to-accent/40">
+								<div className="relative w-16 h-16 rounded-full p-[2.5px] bg-gradient-to-tr from-amber-500 via-rose-500 to-accent shadow-sm">
 									<div className="relative w-full h-full rounded-full overflow-hidden bg-background border-2 border-background">
 										<Image
 											src={story.mediaUrl}
@@ -164,10 +167,20 @@ export default function StoriesCarousel() {
 						{/* Header (Username & Time) */}
 						<div className="absolute top-8 left-4 right-4 z-50 flex items-center justify-between">
 							<div className="flex items-center gap-2">
-								<div className="w-8 h-8 rounded-full bg-surface border border-white/20 flex items-center justify-center text-xs font-semibold text-white">
-									S
-								</div>
-								<span className="text-xs font-bold text-white">Solus</span>
+								{session?.user?.image ? (
+									<Image
+										src={session.user.image}
+										alt={session.user.name ?? "You"}
+										width={28}
+										height={28}
+										className="rounded-full border border-white/20"
+									/>
+								) : (
+									<div className="w-7 h-7 rounded-full bg-surface border border-white/20 flex items-center justify-center text-[10px] font-semibold text-white">
+										{session?.user?.name?.charAt(0).toUpperCase() ?? "Y"}
+									</div>
+								)}
+								<span className="text-xs font-bold text-white">{session?.user?.name ?? "You"}</span>
 								<span className="text-[10px] text-white/60">
 									{new Date(activeStories[activeStoryIndex].createdAt).toLocaleTimeString("en-US", {
 										hour: "numeric",

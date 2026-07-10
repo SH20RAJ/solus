@@ -53,10 +53,10 @@ export default function Sidebar() {
 						<Link
 							key={item.href}
 							href={item.href}
-							className={`flex items-center gap-3 px-3 py-2 rounded-[10px] text-sm transition-all duration-200 ease-out ${
+							className={`flex items-center gap-3 px-3 py-2 rounded-[10px] text-sm transition-all duration-200 ease-out border ${
 								isActive
-									? "bg-card text-text-primary font-medium shadow-sm border border-border/50"
-									: "text-text-secondary hover:text-text-primary hover:bg-card/50"
+									? "bg-accent/5 text-accent border-accent/20 font-semibold"
+									: "text-text-secondary hover:text-text-primary hover:bg-card/50 border-transparent"
 							}`}
 							aria-current={isActive ? "page" : undefined}
 						>
@@ -73,7 +73,7 @@ export default function Sidebar() {
 			<div className="px-4 pb-6 space-y-4">
 				<Link
 					href="/create"
-					className="flex items-center justify-center gap-2 w-full h-10 rounded-[10px] bg-text-primary text-background text-sm font-medium transition-all duration-200 ease-out hover:opacity-90 active:scale-[0.98]"
+					className="flex items-center justify-center gap-2 w-full h-10 rounded-[10px] bg-accent text-background text-sm font-semibold transition-all duration-200 ease-out hover:opacity-90 active:scale-[0.98] shadow-sm shadow-accent/10"
 				>
 					<PlusIcon size={16} />
 					Create Entry

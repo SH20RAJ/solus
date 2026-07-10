@@ -42,7 +42,7 @@ export default function TimelinePage() {
 	};
 
 	return (
-		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
+		<div className="py-8 sm:py-12 w-full animate-slide-up">
 			<header className="mb-10">
 				<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary font-serif">
 					Timeline

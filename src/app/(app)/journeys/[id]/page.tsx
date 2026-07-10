@@ -76,7 +76,7 @@ export default function JourneyDetailPage() {
 	}
 
 	return (
-		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
+		<div className="py-8 sm:py-12 w-full animate-slide-up">
 			<Link
 				href="/journeys"
 				className="text-xs text-text-muted hover:text-text-primary transition-colors duration-200 ease-out uppercase tracking-wider font-mono"

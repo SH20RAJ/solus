@@ -60,7 +60,7 @@ export default function HomePage() {
 	};
 
 	return (
-		<div className="py-10 sm:py-16 max-w-[640px] mx-auto animate-slide-up">
+		<div className="py-8 sm:py-12 w-full animate-slide-up">
 			{/* Greeting */}
 			<header className="mb-10">
 				<p className="text-[10px] uppercase tracking-[0.2em] font-mono text-text-muted mb-2">

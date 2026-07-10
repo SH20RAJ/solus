@@ -67,7 +67,7 @@ export const post = pgTable("post", {
 		.references(() => user.id, { onDelete: "cascade" }),
 	caption: text("caption"),
 	mediaUrl: text("media_url"),
-	mediaType: text("media_type", { enum: ["image", "video"] }),
+	mediaType: text("media_type", { enum: ["image", "video", "audio"] }),
 	location: text("location"),
 	mood: text("mood"),
 	isPublic: boolean("is_public").notNull().default(false),
@@ -82,7 +82,7 @@ export const story = pgTable("story", {
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
 	mediaUrl: text("media_url").notNull(),
-	mediaType: text("media_type", { enum: ["image", "video"] }).notNull(),
+	mediaType: text("media_type", { enum: ["image", "video", "audio"] }).notNull(),
 	caption: text("caption"),
 	expiresAt: timestamp("expires_at").notNull(),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
