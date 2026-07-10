@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function LandingPage() {
 	return (
@@ -17,15 +18,23 @@ export default function LandingPage() {
 						Solus
 					</span>
 				</div>
-				<a
-					href="https://github.com/SH20RAJ/solus"
-					target="_blank"
-					rel="noopener noreferrer"
-					className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
-					aria-label="View Solus on GitHub"
-				>
-					GitHub
-				</a>
+				<div className="flex items-center gap-5">
+					<Link
+						href="/login"
+						className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
+					>
+						Sign In
+					</Link>
+					<a
+						href="https://github.com/SH20RAJ/solus"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
+						aria-label="View Solus on GitHub"
+					>
+						GitHub
+					</a>
+				</div>
 			</nav>
 
 			{/* ── Hero ── */}
@@ -44,12 +53,13 @@ export default function LandingPage() {
 					when you&apos;re ready.
 				</p>
 				<div className="mt-10">
-					<button
+					<Link
 						id="hero-cta"
-						className="h-11 px-6 rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
+						href="/login"
+						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
 					>
 						Start Your Journey
-					</button>
+					</Link>
 				</div>
 			</section>
 
@@ -343,12 +353,13 @@ export default function LandingPage() {
 					you&apos;re ready.
 				</p>
 				<div className="mt-8">
-					<button
+					<Link
 						id="cta-final"
-						className="h-11 px-6 rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
+						href="/login"
+						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
 					>
 						Start Your Journey
-					</button>
+					</Link>
 				</div>
 			</section>
 
