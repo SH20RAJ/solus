@@ -78,9 +78,8 @@ export default function LocationPageClient() {
 				</div>
 			) : filteredPosts.length === 0 ? (
 				<EmptyState
-					title="No reflections here"
-					description={`You haven't written any reflections tagged at ${decodedLocation} yet.`}
-					actionText="Create Reflection"
+					message={`You haven't written any posts tagged at ${decodedLocation} yet.`}
+					actionLabel="Create Post"
 					actionHref="/create"
 				/>
 			) : (

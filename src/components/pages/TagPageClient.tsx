@@ -78,9 +78,8 @@ export default function TagPageClient() {
 				</div>
 			) : filteredPosts.length === 0 ? (
 				<EmptyState
-					title="No reflections yet"
-					description={`You haven't written any reflections tagged with #${tag} yet.`}
-					actionText="Create Reflection"
+					message={`You haven't written any posts tagged with #${tag} yet.`}
+					actionLabel="Create Post"
 					actionHref="/create"
 				/>
 			) : (
