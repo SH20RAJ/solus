@@ -284,3 +284,6 @@ We are building Solus.
 ## One-Sentence Pitch
 
 **Solus is the first personal social network—a private place to document your life without an audience, and share your story only when you're ready.**
+
+---
+insolus.world
