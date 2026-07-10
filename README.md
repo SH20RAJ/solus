@@ -185,11 +185,15 @@ Deploys to [solus.shraj.workers.dev](https://solus.shraj.workers.dev).
   <img src="public/screenshots/home.png" alt="Home Feed" width="48%" />
 </p>
 <p align="center">
-  <img src="public/screenshots/features.png" alt="Features Overview" width="48%" />
-  <img src="public/screenshots/how_it_works.png" alt="How it Works" width="48%" />
+  <img src="public/screenshots/timeline.png" alt="Timeline History" width="48%" />
+  <img src="public/screenshots/stories.png" alt="Stories Feed" width="48%" />
 </p>
 <p align="center">
-  <img src="public/screenshots/use_cases.png" alt="Use Cases" width="98%" />
+  <img src="public/screenshots/collections.png" alt="Collections Directory" width="48%" />
+  <img src="public/screenshots/profile.png" alt="Profile Insights" width="48%" />
+</p>
+<p align="center">
+  <img src="public/screenshots/create.png" alt="Create Entry" width="98%" />
 </p>
 
 ---

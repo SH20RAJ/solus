@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV_ITEMS = [
 	{ href: "/home", label: "Home", icon: HomeIcon },
@@ -93,7 +94,7 @@ export default function Sidebar() {
 				</div>
 
 				{/* ── Logo & Title ── */}
-				<div className={`flex items-center justify-between px-6 py-4 ${isCollapsed ? "justify-center" : ""}`}>
+				<div className={`flex items-center justify-between px-6 py-4 ${isCollapsed ? "flex-col gap-4 justify-center" : ""}`}>
 					<div className="flex items-center gap-3">
 						<div className="w-10 h-10 ">
 							<Image
@@ -113,22 +114,33 @@ export default function Sidebar() {
 						)}
 					</div>
 					
-					{/* Collapse / Expand Toggle Button */}
-					<button
-						onClick={toggleCollapse}
-						className="text-text-muted hover:text-text-primary transition-colors cursor-pointer p-1 rounded-md hover:bg-card/50"
-						title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-					>
-						{isCollapsed ? (
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25">
-								<polyline points="9 18 15 12 9 6" />
-							</svg>
-						) : (
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25">
-								<polyline points="15 18 9 12 15 6" />
-							</svg>
-						)}
-					</button>
+					{isCollapsed ? (
+						<div className="flex flex-col items-center gap-3 mt-2">
+							<ThemeToggle />
+							<button
+								onClick={toggleCollapse}
+								className="text-text-muted hover:text-text-primary transition-colors cursor-pointer p-1 rounded-md hover:bg-card/50"
+								title="Expand Sidebar"
+							>
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25">
+									<polyline points="9 18 15 12 9 6" />
+								</svg>
+							</button>
+						</div>
+					) : (
+						<div className="flex items-center gap-2">
+							<ThemeToggle />
+							<button
+								onClick={toggleCollapse}
+								className="text-text-muted hover:text-text-primary transition-colors cursor-pointer p-1 rounded-md hover:bg-card/50"
+								title="Collapse Sidebar"
+							>
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25">
+									<polyline points="15 18 9 12 15 6" />
+								</svg>
+							</button>
+						</div>
+					)}
 				</div>
 
 				{/* ── Search Input ── */}
