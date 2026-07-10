@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -27,6 +27,35 @@ export default function Sidebar() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sidebarMode, setSidebarMode] = useState<"personal" | "lyra">("personal");
 	const [showUserMenu, setShowUserMenu] = useState(false);
+	const [isCollapsed, setIsCollapsed] = useState(false);
+
+	// Load initial collapsed state
+	useEffect(() => {
+		const stored = localStorage.getItem("solus-sidebar-collapsed");
+		if (stored === "true") {
+			setIsCollapsed(true);
+		}
+	}, []);
+
+	// Dynamic offset for main page content
+	useEffect(() => {
+		const mainElement = document.querySelector("main");
+		if (!mainElement) return;
+
+		if (isCollapsed) {
+			mainElement.classList.add("sm:ml-[72px]");
+			mainElement.classList.remove("sm:ml-[260px]");
+		} else {
+			mainElement.classList.add("sm:ml-[260px]");
+			mainElement.classList.remove("sm:ml-[72px]");
+		}
+	}, [isCollapsed]);
+
+	const toggleCollapse = () => {
+		const next = !isCollapsed;
+		setIsCollapsed(next);
+		localStorage.setItem("solus-sidebar-collapsed", String(next));
+	};
 
 	const handleSearchSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -54,20 +83,28 @@ export default function Sidebar() {
 	const activeItems = sidebarMode === "personal" ? PERSONAL_NAV_ITEMS : LYRA_NAV_ITEMS;
 
 	return (
-		<aside className="hidden sm:flex flex-col w-[260px] h-screen border-r border-border/40 bg-background fixed left-0 top-0 z-40 select-none font-sans justify-between">
+		<aside
+			className={`hidden sm:flex flex-col h-screen border-r border-border/40 bg-background fixed left-0 top-0 z-40 select-none font-sans justify-between transition-all duration-300 ease-in-out ${
+				isCollapsed ? "w-[72px]" : "w-[260px]"
+			}`}
+		>
 			{/* Top Block: macOS Window Controls, Brand Header, Mode Switcher */}
 			<div className="flex flex-col">
 				{/* ── macOS Style Window Control Dots ── */}
-				<div className="flex items-center gap-1.5 px-6 pt-5 pb-2">
+				<div className={`flex items-center gap-1.5 px-6 pt-5 pb-2 ${isCollapsed ? "justify-center" : ""}`}>
 					<span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56] border border-[#e0443e]/40 shadow-sm" />
-					<span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e] border border-[#df9b14]/40 shadow-sm" />
-					<span className="w-2.5 h-2.5 rounded-full bg-[#27c93f] border border-[#1aab29]/40 shadow-sm" />
+					{!isCollapsed && (
+						<>
+							<span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e] border border-[#df9b14]/40 shadow-sm" />
+							<span className="w-2.5 h-2.5 rounded-full bg-[#27c93f] border border-[#1aab29]/40 shadow-sm" />
+						</>
+					)}
 				</div>
 
 				{/* ── Logo & Title ── */}
-				<div className="flex items-center justify-between px-6 py-4">
+				<div className={`flex items-center justify-between px-6 py-4 ${isCollapsed ? "justify-center" : ""}`}>
 					<div className="flex items-center gap-3">
-						<div className="w-7 h-7 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center shadow-inner">
+						<div className="w-7 h-7 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center shadow-inner shrink-0">
 							<Image
 								src="/logo.png"
 								alt="Solus"
@@ -76,66 +113,97 @@ export default function Sidebar() {
 								className="rounded"
 							/>
 						</div>
-						<div className="flex flex-col text-left">
-							<span className="text-xs font-bold tracking-tight text-text-primary">
-								Solus
-							</span>
-							<span className="text-[8px] font-mono text-text-muted/70">v1.0.0</span>
-						</div>
+						{!isCollapsed && (
+							<div className="flex flex-col text-left">
+								<span className="text-xs font-bold tracking-tight text-text-primary">
+									Solus
+								</span>
+								<span className="text-[8px] font-mono text-text-muted/70">v1.0.0</span>
+							</div>
+						)}
 					</div>
-					<button 
-						onClick={() => router.push("/timeline")} 
-						className="text-text-muted hover:text-text-primary transition-colors cursor-pointer"
-						title="Timeline Index"
+					
+					{/* Collapse / Expand Toggle Button */}
+					<button
+						onClick={toggleCollapse}
+						className="text-text-muted hover:text-text-primary transition-colors cursor-pointer p-1 rounded-md hover:bg-card/50"
+						title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
 					>
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-							<circle cx="11" cy="11" r="8" />
-							<line x1="21" y1="21" x2="16.65" y2="16.65" />
-						</svg>
+						{isCollapsed ? (
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25">
+								<polyline points="9 18 15 12 9 6" />
+							</svg>
+						) : (
+							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25">
+								<polyline points="15 18 9 12 15 6" />
+							</svg>
+						)}
 					</button>
 				</div>
 
 				{/* ── Segmented Control Switcher (Mockup style) ── */}
 				<div className="px-4 mb-4">
-					<div className="flex rounded-lg bg-surface/85 p-0.5 border border-border/20 shadow-inner">
+					{isCollapsed ? (
 						<button
-							onClick={() => setSidebarMode("personal")}
-							className={`flex-1 py-1.5 text-[9px] uppercase tracking-wider font-bold rounded-md transition-all duration-200 cursor-pointer ${
-								sidebarMode === "personal"
-									? "bg-[#0c0c0e] text-accent border border-accent/25 shadow-sm font-semibold"
-									: "text-text-secondary hover:text-text-primary"
-							}`}
+							onClick={() => setSidebarMode(sidebarMode === "personal" ? "lyra" : "personal")}
+							className="w-9 h-9 mx-auto rounded-lg bg-surface/85 border border-border/20 flex items-center justify-center text-text-secondary hover:text-accent cursor-pointer transition-colors shadow-inner"
+							title={sidebarMode === "personal" ? "Switch to Lyra AI" : "Switch to Personal"}
 						>
-							Personal
+							{sidebarMode === "personal" ? <HomeIcon size={15} /> : <SparklesIcon size={15} />}
 						</button>
-						<button
-							onClick={() => setSidebarMode("lyra")}
-							className={`flex-1 py-1.5 text-[9px] uppercase tracking-wider font-bold rounded-md transition-all duration-200 cursor-pointer ${
-								sidebarMode === "lyra"
-									? "bg-[#0c0c0e] text-accent border border-accent/25 shadow-sm font-semibold"
-									: "text-text-secondary hover:text-text-primary"
-							}`}
-						>
-							Lyra AI
-						</button>
-					</div>
+					) : (
+						<div className="flex rounded-lg bg-surface/85 p-0.5 border border-border/20 shadow-inner">
+							<button
+								onClick={() => setSidebarMode("personal")}
+								className={`flex-1 py-1.5 text-[9px] uppercase tracking-wider font-bold rounded-md transition-all duration-200 cursor-pointer ${
+									sidebarMode === "personal"
+										? "bg-[#0c0c0e] text-accent border border-accent/25 shadow-sm font-semibold"
+										: "text-text-secondary hover:text-text-primary"
+								}`}
+							>
+								Personal
+							</button>
+							<button
+								onClick={() => setSidebarMode("lyra")}
+								className={`flex-1 py-1.5 text-[9px] uppercase tracking-wider font-bold rounded-md transition-all duration-200 cursor-pointer ${
+									sidebarMode === "lyra"
+										? "bg-[#0c0c0e] text-accent border border-accent/25 shadow-sm font-semibold"
+										: "text-text-secondary hover:text-text-primary"
+								}`}
+							>
+								Lyra AI
+							</button>
+						</div>
+					)}
 				</div>
 
 				{/* ── Search Input ── */}
-				<form onSubmit={handleSearchSubmit} className="px-4 mb-2">
-					<div className="relative">
-						<input
-							type="text"
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							placeholder="Search tags or locations..."
-							className="w-full h-8 pl-8 pr-3 text-[10px] rounded-lg border border-border/30 bg-card text-text-primary placeholder:text-text-muted/65 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent transition-all duration-200 shadow-inner"
-						/>
-						<span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted">
-							<SearchIcon size={12} />
-						</span>
+				{!isCollapsed ? (
+					<form onSubmit={handleSearchSubmit} className="px-4 mb-2">
+						<div className="relative">
+							<input
+								type="text"
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								placeholder="Search tags or locations..."
+								className="w-full h-8 pl-8 pr-3 text-[10px] rounded-lg border border-border/30 bg-card text-text-primary placeholder:text-text-muted/65 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent transition-all duration-200 shadow-inner"
+							/>
+							<span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted">
+								<SearchIcon size={12} />
+							</span>
+						</div>
+					</form>
+				) : (
+					<div className="flex justify-center mb-2">
+						<button
+							onClick={toggleCollapse}
+							className="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+							title="Search"
+						>
+							<SearchIcon size={14} />
+						</button>
 					</div>
-				</form>
+				)}
 
 				{/* ── Primary Links ── */}
 				<nav className="px-4 mt-2 space-y-1.5" aria-label="Main navigation">
@@ -147,17 +215,18 @@ export default function Sidebar() {
 							<Link
 								key={item.href}
 								href={item.href}
-								className={`flex items-center gap-3 px-3 py-2 rounded-[10px] text-xs transition-all duration-200 ease-out border ${
+								className={`flex items-center rounded-[10px] text-xs transition-all duration-200 ease-out border ${
 									isActive
 										? "bg-accent/5 text-accent border-accent/20 font-semibold"
 										: "text-text-secondary hover:text-text-primary hover:bg-card/50 border-transparent"
-								}`}
+								} ${isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-2"}`}
+								title={isCollapsed ? item.label : undefined}
 								aria-current={isActive ? "page" : undefined}
 							>
 								<span className={isActive ? "text-accent" : "text-text-muted"}>
 									<Icon size={16} />
 								</span>
-								{item.label}
+								{!isCollapsed && item.label}
 							</Link>
 						);
 					})}
@@ -166,20 +235,33 @@ export default function Sidebar() {
 
 			{/* Bottom Block: Quick Add & User Account Capsule Card */}
 			<div className="px-4 pb-6 space-y-4 relative">
-				<Link
-					href="/create"
-					className="flex items-center justify-center gap-2 w-full h-10 rounded-[10px] bg-accent text-background text-xs font-semibold transition-all duration-200 ease-out hover:opacity-90 active:scale-[0.98] shadow-sm shadow-accent/10"
-				>
-					<PlusIcon size={14} />
-					Create Entry
-				</Link>
+				{isCollapsed ? (
+					<Link
+						href="/create"
+						className="flex items-center justify-center w-10 h-10 rounded-full bg-accent text-background transition-all duration-200 ease-out hover:opacity-90 active:scale-[0.95] shadow-sm shadow-accent/10 mx-auto"
+						title="Create Entry"
+					>
+						<PlusIcon size={16} />
+					</Link>
+				) : (
+					<Link
+						href="/create"
+						className="flex items-center justify-center gap-2 w-full h-10 rounded-[10px] bg-accent text-background text-xs font-semibold transition-all duration-200 ease-out hover:opacity-90 active:scale-[0.98] shadow-sm shadow-accent/10"
+					>
+						<PlusIcon size={14} />
+						Create Entry
+					</Link>
+				)}
 
 				{session?.user && (
 					<div className="relative">
 						{/* User Account Capsule Card */}
-						<div 
+						<div
 							onClick={() => setShowUserMenu(!showUserMenu)}
-							className="flex items-center justify-between p-2.5 rounded-full bg-card/65 border border-border/30 hover:border-border/60 transition-all duration-300 cursor-pointer shadow-[0_2px_12px_-4px_rgba(0,0,0,0.05)]"
+							className={`flex items-center bg-card/65 border border-border/30 hover:border-border/60 transition-all duration-300 cursor-pointer shadow-[0_2px_12px_-4px_rgba(0,0,0,0.05)] ${
+								isCollapsed ? "w-10 h-10 rounded-full p-0.5 justify-center mx-auto" : "p-2.5 rounded-full justify-between gap-2.5"
+							}`}
+							title={isCollapsed ? session.user.name ?? "Account" : undefined}
 						>
 							<div className="flex items-center gap-2.5 min-w-0">
 								{session.user.image ? (
@@ -195,42 +277,50 @@ export default function Sidebar() {
 										{session.user.name?.charAt(0).toUpperCase()}
 									</div>
 								)}
-								<div className="min-w-0 text-left">
-									<p className="text-[11px] font-bold text-text-primary truncate">
-										{session.user.name}
-									</p>
-									<p className="text-[9px] text-text-muted truncate">
-										{session.user.email}
-									</p>
+								{!isCollapsed && (
+									<div className="min-w-0 text-left">
+										<p className="text-[11px] font-bold text-text-primary truncate">
+											{session.user.name}
+										</p>
+										<p className="text-[9px] text-text-muted truncate">
+											{session.user.email}
+										</p>
+									</div>
+								)}
+							</div>
+							{!isCollapsed && (
+								<div className="p-1 text-text-muted hover:text-text-primary shrink-0 transition-colors">
+									<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+										<circle cx="12" cy="12" r="1" />
+										<circle cx="19" cy="12" r="1" />
+										<circle cx="5" cy="12" r="1" />
+									</svg>
 								</div>
-							</div>
-							<div className="p-1 text-text-muted hover:text-text-primary shrink-0 transition-colors">
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-									<circle cx="12" cy="12" r="1" />
-									<circle cx="19" cy="12" r="1" />
-									<circle cx="5" cy="12" r="1" />
-								</svg>
-							</div>
+							)}
 						</div>
 
 						{/* Dropdown Menu */}
 						{showUserMenu && (
 							<>
-								<div 
-									className="fixed inset-0 z-10" 
+								<div
+									className="fixed inset-0 z-10"
 									onClick={() => setShowUserMenu(false)}
 								/>
-								<div className="absolute bottom-14 left-0 right-0 z-20 p-1.5 rounded-xl border border-border/40 bg-[#0c0c0e]/95 backdrop-blur-md shadow-xl animate-slide-up flex flex-col gap-0.5">
-									<Link 
-										href="/create" 
+								<div
+									className={`absolute z-20 p-1.5 rounded-xl border border-border/40 bg-[#0c0c0e]/95 backdrop-blur-md shadow-xl animate-slide-up flex flex-col gap-0.5 ${
+										isCollapsed ? "bottom-14 left-1 w-44" : "bottom-14 left-0 right-0"
+									}`}
+								>
+									<Link
+										href="/create"
 										onClick={() => setShowUserMenu(false)}
 										className="w-full text-left px-3 py-2 rounded-lg text-[10px] text-text-secondary hover:text-text-primary hover:bg-card transition-colors flex items-center gap-2 font-mono uppercase tracking-wider"
 									>
 										<PlusIcon size={12} />
 										New Reflection
 									</Link>
-									<Link 
-										href="/pitch" 
+									<Link
+										href="/pitch"
 										onClick={() => setShowUserMenu(false)}
 										className="w-full text-left px-3 py-2 rounded-lg text-[10px] text-text-secondary hover:text-text-primary hover:bg-card transition-colors flex items-center gap-2 font-mono uppercase tracking-wider"
 									>
@@ -238,7 +328,7 @@ export default function Sidebar() {
 										AI Lyra Premium
 									</Link>
 									<div className="h-px bg-border/20 my-1" />
-									<button 
+									<button
 										onClick={() => {
 											setShowUserMenu(false);
 											handleSignOut();

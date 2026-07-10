@@ -8,7 +8,7 @@ const DATABASE_URL =
 	"postgresql://neondb_owner:npg_OkHz8e6Dldgn@ep-broad-dream-aokhdt5q-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 
 async function main() {
-	console.log("🌱 Seeding database with 42 premium reflections...");
+	console.log("🌱 Seeding database with 42 posts and 20+ collections...");
 	const sql = neon(DATABASE_URL);
 	const db = drizzle({ client: sql, schema });
 
@@ -422,55 +422,62 @@ async function main() {
 		expiresAt: new Date(Date.now() + storyDuration),
 	});
 
-	// 5. Create Collections
-	console.log("Creating collections...");
-	const collection1Id = crypto.randomUUID();
-	const collection2Id = crypto.randomUUID();
+	// 5. Create 22 Collections (Journeys)
+	console.log("Creating 22 collections...");
+	const collectionsConfig = [
+		{ title: "Japan Travels", desc: "Documenting Kyoto bamboo forests and temples.", cover: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&auto=format&fit=crop" },
+		{ title: "Yosemite Walks", desc: "Cliffs, forest hikes, mist and high streams.", cover: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop" },
+		{ title: "Daily Groundings", desc: "Small morning rituals like coffee and self-talk.", cover: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&auto=format&fit=crop" },
+		{ title: "Parisian Dusks", desc: "Walks along the Seine and quiet city lights.", cover: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&auto=format&fit=crop" },
+		{ title: "Alpine Silence", desc: "Climbing snow caps and resting in green valleys.", cover: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&auto=format&fit=crop" },
+		{ title: "Italian Alleys", desc: "Cobblestones of Rome and Amalfi coastline.", cover: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&auto=format&fit=crop" },
+		{ title: "Digital Detox Notes", desc: "Reflections on leaving social media distractions.", cover: "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=800&auto=format&fit=crop" },
+		{ title: "Bavarian Woods", desc: "Sunrays hitting forest pathways and mossy roots.", cover: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&auto=format&fit=crop" },
+		{ title: "Creative Loops", desc: "Vinyl record shop finds, studio audio, and code.", cover: "https://images.unsplash.com/photo-1484755560693-a4074577af3a?w=800&auto=format&fit=crop" },
+		{ title: "Morning Dews", desc: "Running through lakeside fog and early tea brews.", cover: "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=800&auto=format&fit=crop" },
+		{ title: "Grateful Heart Log", desc: "Documenting lessons, mistakes, and inner peace.", cover: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=800&auto=format&fit=crop" },
+		{ title: "Stargazing Nights", desc: "Desert sky maps and dark mountain horizons.", cover: "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?w=800&auto=format&fit=crop" },
+		{ title: "Soundscapes of Rain", desc: "Audio claps of thunder and window raindrops.", cover: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&auto=format&fit=crop" },
+		{ title: "Waterfalls & Valleys", desc: "Rivers finding their path in rocky landscapes.", cover: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&auto=format&fit=crop" },
+		{ title: "Solus App Milestones", desc: "The journey of building this private digital haven.", cover: "https://images.unsplash.com/photo-1484755560693-a4074577af3a?w=800&auto=format&fit=crop" },
+		{ title: "Cooking Meditations", desc: "Chop, simmer, smell. Slow meals from scratch.", cover: "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=800&auto=format&fit=crop" },
+		{ title: "Rome Market Sensory", desc: "Smells, colors, and textures of fresh foods.", cover: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&auto=format&fit=crop" },
+		{ title: "Spring Greenhouses", desc: "Glass-domed warm gardens keeping winter cold out.", cover: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&auto=format&fit=crop" },
+		{ title: "Mental Recharge Log", desc: "Short logs on mental rest and slow living.", cover: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&auto=format&fit=crop" },
+		{ title: "Alleyway Coffee Spots", desc: "Finding hidden small spots with rich coffee cups.", cover: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&auto=format&fit=crop" },
+		{ title: "Bouldering & Paths", desc: "Steep mountain paths and climbing achievements.", cover: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop" },
+		{ title: "Quiet Library Rooms", desc: "Paperbacks, wooden chairs, and ticking wall clocks.", cover: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&auto=format&fit=crop" },
+	];
 
-	await db.insert(schema.journey).values({
-		id: collection1Id,
-		userId,
-		title: "Japan & Yosemite Travels",
-		description: "Documenting silence, high altitudes, and clear nights.",
-		coverUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop",
-	});
+	for (const config of collectionsConfig) {
+		const collectionId = crypto.randomUUID();
+		await db.insert(schema.journey).values({
+			id: collectionId,
+			userId,
+			title: config.title,
+			description: config.desc,
+			coverUrl: config.cover,
+		});
 
-	await db.insert(schema.journey).values({
-		id: collection2Id,
-		userId,
-		title: "Self-Talk & Growth Logs",
-		description: "Private voice logs, vlogs, and texts about life.",
-		coverUrl: "https://images.unsplash.com/photo-1516280440614-37939bbacd6a?w=800&auto=format&fit=crop",
-	});
+		// Staggered linking: Link 2 random posts to each collection
+		const idx1 = Math.floor(Math.random() * postIds.length);
+		let idx2 = Math.floor(Math.random() * postIds.length);
+		if (idx1 === idx2) idx2 = (idx2 + 1) % postIds.length;
 
-	// Link posts to collections
-	await db.insert(schema.journeyPost).values({
-		id: crypto.randomUUID(),
-		journeyId: collection1Id,
-		postId: postIds[1], // Kyoto, Japan
-		order: 1,
-	});
+		await db.insert(schema.journeyPost).values({
+			id: crypto.randomUUID(),
+			journeyId: collectionId,
+			postId: postIds[idx1],
+			order: 1,
+		});
 
-	await db.insert(schema.journeyPost).values({
-		id: crypto.randomUUID(),
-		journeyId: collection1Id,
-		postId: postIds[2], // Yosemite Park
-		order: 2,
-	});
-
-	await db.insert(schema.journeyPost).values({
-		id: crypto.randomUUID(),
-		journeyId: collection2Id,
-		postId: postIds[3], // Home Studio audio
-		order: 1,
-	});
-
-	await db.insert(schema.journeyPost).values({
-		id: crypto.randomUUID(),
-		journeyId: collection2Id,
-		postId: postIds[14], // Home Studio audio 2
-		order: 2,
-	});
+		await db.insert(schema.journeyPost).values({
+			id: crypto.randomUUID(),
+			journeyId: collectionId,
+			postId: postIds[idx2],
+			order: 2,
+		});
+	}
 
 	console.log("✅ Seeding completed successfully!");
 }

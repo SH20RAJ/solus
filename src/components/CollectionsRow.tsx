@@ -74,11 +74,11 @@ export default function CollectionsRow() {
 							{/* Google Photos Album style cover card */}
 							<div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-card border border-border/30 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] transition-all duration-300 group-hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.1)] group-hover:scale-[1.02]">
 								{collection.coverUrl ? (
-									<Image
+									<img
 										src={collection.coverUrl}
 										alt={collection.title}
-										fill
-										className="object-cover"
+										className="object-cover w-full h-full"
+										loading="lazy"
 									/>
 								) : (
 									<div className={`absolute inset-0 bg-gradient-to-br ${gradient} flex items-center justify-center`}>

@@ -12,7 +12,7 @@ export default function AppLayout({
 			<Sidebar />
 
 			{/* Main content — offset for sidebar on desktop */}
-			<main className="sm:ml-[260px] min-h-screen pb-16 sm:pb-0 flex justify-center">
+			<main className="sm:ml-[260px] min-h-screen pb-16 sm:pb-0 flex justify-center transition-all duration-300 ease-in-out">
 				<div className="w-full max-w-[600px] px-4 sm:px-6">
 					{children}
 				</div>
