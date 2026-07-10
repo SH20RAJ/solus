@@ -95,7 +95,7 @@ export default function Sidebar() {
 				{/* ── Logo & Title ── */}
 				<div className={`flex items-center justify-between px-6 py-4 ${isCollapsed ? "justify-center" : ""}`}>
 					<div className="flex items-center gap-3">
-						<div className="w-7 h-7 rounded-lg bg-accent/15 border border-accent/20 flex items-center justify-center shadow-inner shrink-0">
+						<div className="w-10 h-10 ">
 							<Image
 								src="/logo.png"
 								alt="Solus"
@@ -106,10 +106,9 @@ export default function Sidebar() {
 						</div>
 						{!isCollapsed && (
 							<div className="flex flex-col text-left">
-								<span className="text-xs font-bold tracking-tight text-text-primary">
+								<span className="text-2xl font-bold tracking-tight text-text-primary">
 									Solus
 								</span>
-								<span className="text-[8px] font-mono text-text-muted/70">v1.0.0</span>
 							</div>
 						)}
 					</div>
@@ -189,22 +188,22 @@ export default function Sidebar() {
 			</div>
 
 			{/* Bottom Block: Quick Add & User Account Capsule Card */}
-			<div className="px-4 pb-6 space-y-4 relative">
+			<div className="px-4 pb-6 space-y-3.5 relative">
 				{isCollapsed ? (
 					<Link
 						href="/create"
-						className="flex items-center justify-center w-10 h-10 rounded-full bg-accent text-background transition-all duration-200 ease-out hover:opacity-90 active:scale-[0.95] shadow-sm shadow-accent/10 mx-auto"
-						title="Create Entry"
+						className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-tr from-accent via-accent to-accent/90 text-background transition-all duration-300 ease-out hover:scale-105 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] active:scale-[0.95] shadow-md mx-auto cursor-pointer"
+						title="New Entry"
 					>
 						<PlusIcon size={16} />
 					</Link>
 				) : (
 					<Link
 						href="/create"
-						className="flex items-center justify-center gap-2 w-full h-10 rounded-[10px] bg-accent text-background text-xs font-semibold transition-all duration-200 ease-out hover:opacity-90 active:scale-[0.98] shadow-sm shadow-accent/10"
+						className="flex items-center justify-center gap-2.5 w-full h-11 rounded-full bg-gradient-to-r from-accent via-accent to-accent/90 text-background text-xs font-bold transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-[0_4px_20px_rgba(255,255,255,0.1)] active:scale-[0.98] shadow-md cursor-pointer tracking-wider"
 					>
 						<PlusIcon size={14} />
-						Create Entry
+						New Entry
 					</Link>
 				)}
 
