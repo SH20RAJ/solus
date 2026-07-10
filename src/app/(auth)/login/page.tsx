@@ -3,13 +3,22 @@
 import Image from "next/image";
 import { signIn } from "@/lib/auth-client";
 
+import { useSession } from "@/lib/auth-client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 export default function LoginPage() {
+	const { data: session, isPending } = useSession();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (session) {
+			router.replace("/home");
+		}
+	}, [session, router]);
+
 	const handleGoogleSignIn = () => {
 		signIn.social({ provider: "google", callbackURL: "/home" });
-	};
-
-	const handleAppleSignIn = () => {
-		signIn.social({ provider: "apple", callbackURL: "/home" });
 	};
 
 	return (

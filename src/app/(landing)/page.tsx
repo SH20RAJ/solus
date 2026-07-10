@@ -1,8 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { APP_CONFIG } from "@/lib/config";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+	const isLogged = !!session;
 	const jsonLd = {
 		"@context": "https://schema.org",
 		"@type": "SoftwareApplication",
@@ -44,12 +50,21 @@ export default function LandingPage() {
 					>
 						Pitch
 					</Link>
-					<Link
-						href="/login"
-						className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
-					>
-						Sign In
-					</Link>
+					{isLogged ? (
+						<Link
+							href="/home"
+							className="text-xs uppercase font-mono tracking-wider font-semibold text-accent px-3 py-1.5 rounded-lg border border-accent/20 bg-accent/5 hover:bg-accent/10 transition-colors"
+						>
+							Go to Feed
+						</Link>
+					) : (
+						<Link
+							href="/login"
+							className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
+						>
+							Sign In
+						</Link>
+					)}
 					<a
 						href={APP_CONFIG.githubUrl}
 						target="_blank"
@@ -80,10 +95,10 @@ export default function LandingPage() {
 				<div className="mt-10 flex flex-wrap gap-4">
 					<Link
 						id="hero-cta"
-						href="/login"
-						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
+						href={isLogged ? "/home" : "/login"}
+						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-semibold transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
 					>
-						Start Your Journey
+						{isLogged ? "Go to Dashboard" : "Start Your Journey"}
 					</Link>
 					<Link
 						id="hero-pitch-cta"
@@ -387,10 +402,10 @@ export default function LandingPage() {
 				<div className="mt-8">
 					<Link
 						id="cta-final"
-						href="/login"
-						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
+						href={isLogged ? "/home" : "/login"}
+						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-semibold transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
 					>
-						Start Your Journey
+						{isLogged ? "Go to Dashboard" : "Start Your Journey"}
 					</Link>
 				</div>
 			</section>

@@ -67,6 +67,15 @@ body {
 	}
 }
 
+@keyframes soundbar {
+	from {
+		height: 3px;
+	}
+	to {
+		height: 12px;
+	}
+}
+
 .animate-fade-in {
 	animation: fade-in 300ms ease-out both;
 }
