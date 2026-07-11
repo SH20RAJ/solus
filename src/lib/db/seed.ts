@@ -408,7 +408,7 @@ async function main() {
 			userId,
 			caption: data.caption,
 			mediaUrl: data.mediaUrl,
-			mediaType: data.mediaType,
+			mediaType: data.mediaType as typeof schema.post.$inferInsert["mediaType"],
 			location: data.location,
 			mood: data.mood,
 			createdAt,
