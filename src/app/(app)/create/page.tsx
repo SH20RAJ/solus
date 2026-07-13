@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import CreatePageClient from "@/components/pages/CreatePageClient";
+import CreateSelectPageClient from "@/components/pages/CreateSelectPageClient";
 
 export const metadata: Metadata = {
 	title: "Solus — Create",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function CreatePage() {
-	return <CreatePageClient />;
+	return <CreateSelectPageClient />;
 }
