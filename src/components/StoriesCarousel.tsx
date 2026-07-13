@@ -77,7 +77,7 @@ export default function StoriesCarousel() {
 		<div className="w-full py-4 border-b border-border/20 mb-6 bg-card/10 select-none">
 			<div className="flex items-center gap-4 overflow-x-auto px-4 scrollbar-none">
 				{/* "Add Story" bubble */}
-				<Link href="/create" className="flex flex-col items-center gap-1.5 shrink-0 group">
+				<Link href="/create?type=story" className="flex flex-col items-center gap-1.5 shrink-0 group">
 					<div className="relative w-16 h-16 p-[2.5px] rounded-full bg-border/40 group-hover:bg-accent/40 transition-colors flex items-center justify-center cursor-pointer">
 						<div className="relative w-full h-full rounded-full overflow-hidden bg-surface flex items-center justify-center">
 							{session?.user?.image ? (

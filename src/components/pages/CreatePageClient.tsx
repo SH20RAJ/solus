@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { mutate } from "swr";
 import TiptapEditor from "@/components/TiptapEditor";
 import { usePosts } from "@/lib/api-client";
@@ -19,10 +19,18 @@ const MOODS = [
 
 export default function CreatePageClient() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const typeParam = searchParams.get("type");
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const coverInputRef = useRef<HTMLInputElement>(null);
 
 	const [entryType, setEntryType] = useState<"post" | "story" | "journal">("post");
+
+	useEffect(() => {
+		if (typeParam === "story" || typeParam === "journal" || typeParam === "post") {
+			setEntryType(typeParam);
+		}
+	}, [typeParam]);
 	const [file, setFile] = useState<File | null>(null);
 	const [preview, setPreview] = useState<string | null>(null);
 	const [caption, setCaption] = useState("");
