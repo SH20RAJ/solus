@@ -158,6 +158,15 @@ export default function ResearchCharts() {
 					</div>
 				</div>
 			)}
+
+			<div className="mt-6 pt-4 border-t border-border/20 text-[10px] text-text-muted leading-normal text-left space-y-1">
+				<p>
+					* Source: <em>Lambert et al. (2022), &ldquo;Taking a One-Week Break from Social Media Improves Well-Being, Depression, and Anxiety.&rdquo;</em> Cyberpsychology, Behavior, and Social Networking.
+				</p>
+				<p>
+					<strong>Nuance Note:</strong> Research indicates that while anxiety, depression, and sleep improve, general loneliness scores do not automatically decrease from simple abstention, especially for those whose primary real-world relationships are digitally mediated. Solus addresses this by encouraging direct, intentional sharing of completed timelines rather than forced disconnection or permanent isolation.
+				</p>
+			</div>
 		</div>
 	);
 }

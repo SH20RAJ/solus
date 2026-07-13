@@ -9,7 +9,7 @@ export default function AmbientPlayer() {
 	const pathname = usePathname();
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const [isPlaying, setIsPlaying] = useState(false);
-	const [userMuted, setUserMuted] = useState(false);
+	const [userMuted, setUserMuted] = useState(true);
 
 	const isPublic = PUBLIC_PAGES.includes(pathname);
 

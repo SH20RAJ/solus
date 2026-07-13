@@ -44,12 +44,6 @@ export default async function LandingPage() {
 					</span>
 				</div>
 				<div className="flex items-center gap-5">
-					<Link
-						href="/pitch"
-						className="text-sm text-text-muted hover:text-text-primary transition-colors duration-200 ease-out"
-					>
-						Pitch
-					</Link>
 					{isLogged ? (
 						<Link
 							href="/home"
@@ -92,21 +86,26 @@ export default async function LandingPage() {
 					and memories — everything stays private. Share your story only
 					when you&apos;re ready.
 				</p>
-				<div className="mt-10 flex flex-wrap gap-4">
-					<Link
-						id="hero-cta"
-						href={isLogged ? "/home" : "/login"}
-						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-semibold transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
-					>
-						{isLogged ? "Go to Dashboard" : "Start Your Journey"}
-					</Link>
-					<Link
-						id="hero-pitch-cta"
-						href="/pitch"
-						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] border border-border/40 text-text-primary text-sm font-medium transition-colors duration-200 ease-out hover:bg-card cursor-pointer"
-					>
-						Read the Pitch
-					</Link>
+				<div className="mt-10">
+					<div className="flex flex-wrap gap-4">
+						<Link
+							id="hero-cta"
+							href={isLogged ? "/home" : "/login"}
+							className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-semibold transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
+						>
+							{isLogged ? "Go to Feed" : "Start Your Timeline"}
+						</Link>
+						<Link
+							id="hero-pitch-cta"
+							href="/pitch"
+							className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] border border-border/40 text-text-primary text-sm font-medium transition-colors duration-200 ease-out hover:bg-card cursor-pointer"
+						>
+							Read the Pitch
+						</Link>
+					</div>
+					<p className="mt-3.5 text-xs text-text-muted">
+						Free forever for personal use. No ads. No algorithm.
+					</p>
 				</div>
 			</section>
 
@@ -322,6 +321,42 @@ export default async function LandingPage() {
 				<div className="h-px bg-border" />
 			</div>
 
+			{/* ── Trust & Privacy ── */}
+			<section className="px-4 sm:px-6 py-20 sm:py-24 max-w-[760px] mx-auto text-left">
+				<p className="text-sm text-text-muted mb-4 tracking-wide">
+					Trust & Privacy
+				</p>
+				<h2 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight text-text-primary">
+					Your data, actually private.
+				</h2>
+				<p className="mt-4 text-base text-text-secondary leading-relaxed max-w-[560px]">
+					We build for individual reflection, not data monetization. Here is how we guarantee your privacy:
+				</p>
+				<div className="mt-8 space-y-4 max-w-[560px]">
+					<div className="flex items-start gap-3 text-sm text-text-secondary leading-relaxed">
+						<span className="text-accent shrink-0 mt-1">✓</span>
+						<span><strong>No public access by default:</strong> No public API exposes your entries. You control exactly what gets shared.</span>
+					</div>
+					<div className="flex items-start gap-3 text-sm text-text-secondary leading-relaxed">
+						<span className="text-accent shrink-0 mt-1">✓</span>
+						<span><strong>Complete data ownership:</strong> Export or delete your entire history at any time. We do not keep shadow backups.</span>
+					</div>
+					<div className="flex items-start gap-3 text-sm text-text-secondary leading-relaxed">
+						<span className="text-accent shrink-0 mt-1">✓</span>
+						<span><strong>Zero ads or algorithms:</strong> We don&apos;t sell your data to advertisers or profile your personality traits.</span>
+					</div>
+					<div className="flex items-start gap-3 text-sm text-text-secondary leading-relaxed">
+						<span className="text-accent shrink-0 mt-1">✓</span>
+						<span><strong>Open source transparency:</strong> The entire application code is open for anyone to inspect and audit on <a href={APP_CONFIG.githubUrl} target="_blank" rel="noopener noreferrer" className="text-accent underline hover:text-accent/80">GitHub</a>.</span>
+					</div>
+				</div>
+			</section>
+
+			{/* ── Divider ── */}
+			<div className="max-w-[760px] mx-auto px-4 sm:px-6">
+				<div className="h-px bg-border" />
+			</div>
+
 			{/* ── Philosophy ── */}
 			<section className="px-4 sm:px-6 py-20 sm:py-24 max-w-[760px] mx-auto">
 				<p className="text-sm text-text-muted mb-4 tracking-wide">
@@ -336,7 +371,7 @@ export default async function LandingPage() {
 						<p className="text-xs font-medium text-text-muted mb-5 uppercase tracking-wider">
 							Instagram
 						</p>
-						<ul className="space-y-3 text-sm text-text-secondary">
+						<ul className="space-y-3 text-sm text-text-secondary text-left">
 							<li>Designed for attention</li>
 							<li>Rewards engagement</li>
 							<li>Public by default</li>
@@ -348,7 +383,7 @@ export default async function LandingPage() {
 						<p className="text-xs font-medium text-accent mb-5 uppercase tracking-wider">
 							Solus
 						</p>
-						<ul className="space-y-3 text-sm text-text-primary">
+						<ul className="space-y-3 text-sm text-text-primary text-left">
 							<li>Designed for reflection</li>
 							<li>Rewards authenticity</li>
 							<li>Private by default</li>
@@ -390,6 +425,53 @@ export default async function LandingPage() {
 				<div className="h-px bg-border" />
 			</div>
 
+			{/* ── FAQ ── */}
+			<section className="px-4 sm:px-6 py-20 sm:py-24 max-w-[760px] mx-auto text-left">
+				<p className="text-sm text-text-muted mb-4 tracking-wide">
+					FAQ
+				</p>
+				<h2 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight text-text-primary mb-10">
+					Frequently Asked Questions
+				</h2>
+				<div className="space-y-8 max-w-[600px]">
+					<div>
+						<h3 className="text-base font-semibold text-text-primary">Is Solus really free?</h3>
+						<p className="mt-2 text-sm text-text-secondary leading-relaxed">
+							Yes, Solus is free forever for personal journaling and memory storage. We plan to introduce optional paid tiers in the future for large-scale storage and premium features like automated book printing.
+						</p>
+					</div>
+					<div>
+						<h3 className="text-base font-semibold text-text-primary">Can anyone see my posts?</h3>
+						<p className="mt-2 text-sm text-text-secondary leading-relaxed">
+							No. By default, every reflection, story, and image is completely private and only viewable by you when you log in. You can choose to generate public links for specific collections, but that is entirely optional.
+						</p>
+					</div>
+					<div>
+						<h3 className="text-base font-semibold text-text-primary">What happens if I want to leave?</h3>
+						<p className="mt-2 text-sm text-text-secondary leading-relaxed">
+							You can download a complete archive of all your posts, images, and metadata at any time, or request the permanent deletion of your account and files from our servers.
+						</p>
+					</div>
+					<div>
+						<h3 className="text-base font-semibold text-text-primary">Is my data backed up?</h3>
+						<p className="mt-2 text-sm text-text-secondary leading-relaxed">
+							Yes. Your data is stored securely in distributed databases with automated daily backups, ensuring you never lose your life journal.
+						</p>
+					</div>
+					<div>
+						<h3 className="text-base font-semibold text-text-primary">Is this open source?</h3>
+						<p className="mt-2 text-sm text-text-secondary leading-relaxed">
+							Yes, the entire codebase is open-source. Anyone can audit our code or self-host their own instance of Solus.
+						</p>
+					</div>
+				</div>
+			</section>
+
+			{/* ── Divider ── */}
+			<div className="max-w-[760px] mx-auto px-4 sm:px-6">
+				<div className="h-px bg-border" />
+			</div>
+
 			{/* ── Final CTA ── */}
 			<section className="px-4 sm:px-6 py-24 sm:py-32 max-w-[760px] mx-auto text-center">
 				<h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
@@ -405,13 +487,16 @@ export default async function LandingPage() {
 						href={isLogged ? "/home" : "/login"}
 						className="inline-flex h-11 px-6 items-center justify-center rounded-[12px] bg-text-primary text-background text-sm font-semibold transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer"
 					>
-						{isLogged ? "Go to Dashboard" : "Start Your Journey"}
+						{isLogged ? "Go to Feed" : "Start Your Timeline"}
 					</Link>
+					<p className="mt-3.5 text-xs text-text-muted">
+						Free forever for personal use. No ads. No algorithm.
+					</p>
 				</div>
 			</section>
 
 			{/* ── Footer ── */}
-			<footer className="border-t border-border px-4 sm:px-6 py-8 max-w-[960px] mx-auto">
+			<footer className="border-t border-border px-4 sm:px-6 py-8 max-w-[960px] mx-auto animate-fade-in">
 				<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 					<div className="flex items-center gap-2.5">
 						<Image
@@ -435,6 +520,9 @@ export default async function LandingPage() {
 						</Link>
 						<Link href="/terms" className="hover:text-text-primary transition-colors duration-200">
 							Terms
+						</Link>
+						<Link href="/pitch" className="hover:text-text-primary transition-colors duration-200">
+							Pitch Deck
 						</Link>
 						<a
 							href={APP_CONFIG.githubUrl}

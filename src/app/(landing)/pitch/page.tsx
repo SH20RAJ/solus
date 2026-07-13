@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { APP_CONFIG } from "@/lib/config";
 import ResearchCharts from "@/components/ResearchCharts";
-import PitchArtifacts from "@/components/PitchArtifacts";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export const metadata: Metadata = {
 	title: "Solus — Pitch",
@@ -11,7 +12,12 @@ export const metadata: Metadata = {
 		"The world's first Personal Social Network. Document your life without an audience, share your story when you're ready.",
 };
 
-export default function PitchPage() {
+export default async function PitchPage() {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+	const isLogged = !!session;
+
 	const jsonLd = {
 		"@context": "https://schema.org",
 		"@type": "ItemPage",
@@ -187,18 +193,22 @@ export default function PitchPage() {
 
 			<Divider />
 
-			{/* ── Interactive Pitch Deck Artifact ── */}
-			<section className="px-4 sm:px-6 py-20 sm:py-24 max-w-[680px] mx-auto">
-				<p className="text-sm text-text-muted mb-4 tracking-wide">
-					Interactive Pitch Artifact
+			{/* ── Interactive Pitch Deck Link ── */}
+			<section className="px-4 sm:px-6 py-12 max-w-[680px] mx-auto text-left border border-border/30 rounded-[20px] bg-card/40 my-6">
+				<p className="text-xs text-text-muted font-mono uppercase tracking-wider mb-2">
+					System Architecture
 				</p>
-				<h2 className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight text-text-primary mb-8">
-					Explore the Pitch Artifact
-				</h2>
-				<p className="text-base text-text-secondary leading-relaxed mb-8">
-					Interactive blueprint explaining product parameters, system architecture flows, and tech stacks.
+				<p className="text-sm text-text-secondary leading-relaxed">
+					Built on Next.js, Hono, Cloudflare Workers, and Postgres &mdash;{" "}
+					<a
+						href={`${APP_CONFIG.githubUrl}/blob/main/solus_pitch_deck.md`}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-accent hover:underline font-semibold"
+					>
+						see full architecture &rarr;
+					</a>
 				</p>
-				<PitchArtifacts />
 			</section>
 
 			<Divider />
@@ -512,41 +522,49 @@ export default function PitchPage() {
 						</div>
 					</div>
 
-					<div className="p-6 rounded-[20px] bg-card border border-border flex flex-col sm:flex-row gap-4 items-start text-left">
-						<span className="text-2xl shrink-0">⏳</span>
-						<div>
-							<h3 className="text-base font-bold text-text-primary">
-								Time-Locked Memories & Vaults
-							</h3>
-							<p className="text-xs text-text-secondary mt-1 leading-relaxed">
-								Write messages to your future self or log current situations, then lock them under a temporal countdown. The system completely encrypts the post, rendering it unreadable until the unlock date is reached.
-							</p>
-						</div>
-					</div>
+					<details className="col-span-1 sm:col-span-2 group border border-border/40 rounded-[20px] p-6 bg-card transition-all duration-300">
+						<summary className="text-sm font-semibold text-text-secondary cursor-pointer list-none flex items-center justify-between">
+							<span>🚀 View Long-Term Explorations</span>
+							<span className="text-xs transition-transform group-open:rotate-180 font-mono">▼</span>
+						</summary>
+						<div className="mt-6 space-y-4 pt-4 border-t border-border/20 grid grid-cols-1 gap-4 text-left">
+							<div className="p-4 rounded-xl border border-border flex flex-col sm:flex-row gap-4 items-start bg-surface/30">
+								<span className="text-2xl shrink-0">⏳</span>
+								<div>
+									<h4 className="text-sm font-bold text-text-primary">
+										Time-Locked Memories & Vaults
+									</h4>
+									<p className="text-[11px] text-text-secondary mt-1 leading-relaxed">
+										Write messages to your future self or log current situations, then lock them under a temporal countdown. The system completely encrypts the post, rendering it unreadable until the unlock date is reached.
+									</p>
+								</div>
+							</div>
 
-					<div className="p-6 rounded-[20px] bg-card border border-border flex flex-col sm:flex-row gap-4 items-start text-left">
-						<span className="text-2xl shrink-0">🗺️</span>
-						<div>
-							<h3 className="text-base font-bold text-text-primary">
-								Subconscious Mood Landscapes
-							</h3>
-							<p className="text-xs text-text-secondary mt-1 leading-relaxed">
-								Translates the semantic sentiments of your captions and logs into beautiful, abstract topographical mood maps (e.g. "Inspired Valleys" or "Quiet Fjords") to track mental states over time.
-							</p>
-						</div>
-					</div>
+							<div className="p-4 rounded-xl border border-border flex flex-col sm:flex-row gap-4 items-start bg-surface/30">
+								<span className="text-2xl shrink-0">🗺️</span>
+								<div>
+									<h4 className="text-sm font-bold text-text-primary">
+										Subconscious Mood Landscapes
+									</h4>
+									<p className="text-[11px] text-text-secondary mt-1 leading-relaxed">
+										Translates the semantic sentiments of your captions and logs into beautiful, abstract topographical mood maps (e.g. &ldquo;Inspired Valleys&rdquo; or &ldquo;Quiet Fjords&rdquo;) to track mental states over time.
+									</p>
+								</div>
+							</div>
 
-					<div className="p-6 rounded-[20px] bg-card border border-border flex flex-col sm:flex-row gap-4 items-start text-left">
-						<span className="text-2xl shrink-0">🧘</span>
-						<div>
-							<h3 className="text-base font-bold text-text-primary">
-								Offline Sanctuary & Sync Rituals
-							</h3>
-							<p className="text-xs text-text-secondary mt-1 leading-relaxed">
-								An offline-first writing sandbox that holds entries locally on your device. When you are ready to upload, the sync triggers a brief, relaxing breathing exercise to prevent mindless connection loops.
-							</p>
+							<div className="p-4 rounded-xl border border-border flex flex-col sm:flex-row gap-4 items-start bg-surface/30">
+								<span className="text-2xl shrink-0">🧘</span>
+								<div>
+									<h4 className="text-sm font-bold text-text-primary">
+										Offline Sanctuary & Sync Rituals
+									</h4>
+									<p className="text-[11px] text-text-secondary mt-1 leading-relaxed">
+										An offline-first writing sandbox that holds entries locally on your device. When you are ready to upload, the sync triggers a brief, relaxing breathing exercise to prevent mindless connection loops.
+									</p>
+								</div>
+							</div>
 						</div>
-					</div>
+					</details>
 				</div>
 			</section>
 
@@ -615,16 +633,19 @@ export default function PitchPage() {
 				</p>
 				<div className="mt-10">
 					<Link
-						href="/"
-						className="inline-flex h-11 px-6 items-center rounded-[12px] bg-text-primary text-background text-sm font-medium transition-opacity duration-200 ease-out hover:opacity-85"
+						href={isLogged ? "/home" : "/login"}
+						className="inline-flex h-11 px-6 items-center rounded-[12px] bg-text-primary text-background text-sm font-semibold transition-opacity duration-200 ease-out hover:opacity-85 cursor-pointer animate-fade-in"
 					>
-						Visit Solus
+						{isLogged ? "Go to Feed" : "Start Your Timeline"}
 					</Link>
+					<p className="mt-3.5 text-xs text-text-muted">
+						Free forever for personal use. No ads. No algorithm.
+					</p>
 				</div>
 			</section>
 
 			{/* ── Footer ── */}
-			<footer className="border-t border-border px-4 sm:px-6 py-8 max-w-[960px] mx-auto">
+			<footer className="border-t border-border px-4 sm:px-6 py-8 max-w-[960px] mx-auto animate-fade-in">
 				<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 					<div className="flex items-center gap-2.5">
 						<Image
@@ -636,12 +657,24 @@ export default function PitchPage() {
 						/>
 						<span className="text-sm text-text-secondary">Solus</span>
 					</div>
-					<p className="text-xs text-text-muted">
+					<p className="text-xs text-text-muted text-center sm:text-left">
 						Live first. Share later.
 					</p>
-					<div className="flex items-center gap-4 text-xs text-text-muted">
+					<div className="flex items-center gap-4 text-xs text-text-muted flex-wrap justify-center">
+						<Link href="/contact" className="hover:text-text-primary transition-colors duration-200">
+							Contact
+						</Link>
+						<Link href="/privacy" className="hover:text-text-primary transition-colors duration-200">
+							Privacy
+						</Link>
+						<Link href="/terms" className="hover:text-text-primary transition-colors duration-200">
+							Terms
+						</Link>
+						<Link href="/pitch" className="hover:text-text-primary transition-colors duration-200">
+							Pitch Deck
+						</Link>
 						<a
-							href="https://github.com/SH20RAJ/solus"
+							href={APP_CONFIG.githubUrl}
 							target="_blank"
 							rel="noopener noreferrer"
 							className="hover:text-text-primary transition-colors duration-200 ease-out"
