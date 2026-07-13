@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 import dynamic from "next/dynamic";
+import { usePosts } from "@/lib/api-client";
 
 // Dynamically import BlockNoteEditor to prevent SSR window reference hydration mismatch errors
 const BlockNoteEditor = dynamic(() => import("@/components/BlockNoteEditor"), {
@@ -38,6 +39,24 @@ export default function CreatePageClient() {
 	const [mood, setMood] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [useRichEditor, setUseRichEditor] = useState(false);
+
+	// Expand states for optional content types
+	const [showTextTab, setShowTextTab] = useState(false);
+	const [showPhotoTab, setShowPhotoTab] = useState(false);
+
+	// Ceremony after saving
+	const [showCeremony, setShowCeremony] = useState(false);
+	const [remindedPost, setRemindedPost] = useState<{ caption: string; timeLabel: string } | null>(null);
+
+	const { data: postsData } = usePosts();
+	const posts = postsData?.data ?? [];
+
+	// Auto-fill location on mount
+	useEffect(() => {
+		const locations = ["Home Studio", "Local Café", "Quiet Library", "Garden Walk", "Workspace"];
+		const randomLoc = locations[Math.floor(Math.random() * locations.length)];
+		setLocation(randomLoc);
+	}, []);
 
 	// Voice Note recording states
 	const [isRecording, setIsRecording] = useState(false);
@@ -96,6 +115,7 @@ export default function CreatePageClient() {
 		setFile(selected);
 		const url = URL.createObjectURL(selected);
 		setPreview(url);
+		setShowPhotoTab(true);
 	}, []);
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -146,7 +166,6 @@ export default function CreatePageClient() {
 			}
 
 			if (entryType === "story") {
-				// Create story
 				await fetch("/api/stories", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -159,7 +178,6 @@ export default function CreatePageClient() {
 				});
 				await mutate("/api/stories");
 			} else {
-				// Create post
 				await fetch("/api/posts", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -175,9 +193,28 @@ export default function CreatePageClient() {
 				await mutate("/api/posts");
 			}
 
-			router.push("/home");
+			// Fogg-Model Variable Reward: Find a connection from previous posts
+			const matches = posts.filter(p => p.mood === mood || (location && p.location === location));
+			const match = matches.length > 0
+				? matches[Math.floor(Math.random() * matches.length)]
+				: (posts.length > 0 ? posts[Math.floor(Math.random() * posts.length)] : null);
+
+			if (match) {
+				const postDate = new Date(match.createdAt);
+				const timeDiff = Date.now() - postDate.getTime();
+				const days = Math.round(timeDiff / (1000 * 60 * 60 * 24));
+				const label = days > 30 ? `${Math.round(days / 30)} months ago` : `${days} days ago`;
+				setRemindedPost({
+					caption: match.caption || "A quiet moment logged.",
+					timeLabel: label
+				});
+			} else {
+				setRemindedPost(null);
+			}
+
+			setShowCeremony(true);
 		} catch {
-			// Silently handle
+			alert("Failed to seal reflection. Please try again.");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -186,23 +223,62 @@ export default function CreatePageClient() {
 	const isAudio = file?.type.startsWith("audio/") || file?.name.endsWith(".webm");
 	const isVideo = file?.type.startsWith("video/");
 
+	// ── Visual Ceremony Overlay ──
+	if (showCeremony) {
+		return (
+			<div className="py-16 sm:py-24 px-4 sm:px-6 w-full max-w-[500px] mx-auto text-center animate-fade-in font-sans">
+				<div className="w-16 h-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto text-accent text-2xl mb-6 shadow-sm">
+					✓
+				</div>
+				<h1 className="text-2xl font-semibold tracking-tight text-text-primary font-serif">
+					Sealed into your archive
+				</h1>
+				<p className="text-xs text-text-muted mt-2">
+					This is reflection #{posts.length + 1}.
+				</p>
+
+				{remindedPost && (
+					<div className="mt-8 p-6 rounded-[24px] border border-border/30 bg-card/40 text-left animate-slide-up">
+						<span className="text-[10px] text-text-muted uppercase font-mono tracking-wider font-bold">
+							This reminds us of
+						</span>
+						<p className="mt-2.5 text-sm text-text-primary font-serif leading-relaxed italic">
+							&ldquo;{remindedPost.caption}&rdquo;
+						</p>
+						<p className="mt-3 text-[10px] text-accent font-mono">
+							&mdash; {remindedPost.timeLabel}
+						</p>
+					</div>
+				)}
+
+				<button
+					type="button"
+					onClick={() => router.push("/home")}
+					className="w-full h-11 rounded-[14px] bg-text-primary text-background text-xs font-bold transition-all duration-300 hover:opacity-95 active:scale-[0.98] cursor-pointer mt-10 shadow-lg"
+				>
+					Continue to Feed
+				</button>
+			</div>
+		);
+	}
+
 	return (
-		<div className="py-6 sm:py-12 px-4 sm:px-6 w-full max-w-[720px] mx-auto animate-slide-up select-none font-sans">
+		<div className="py-6 sm:py-12 px-4 sm:px-6 w-full max-w-[620px] mx-auto animate-slide-up select-none font-sans">
 			{/* Header */}
 			<header className="mb-6 sm:mb-8 text-left">
 				<span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-mono text-accent font-semibold">
-					Share Privately
+					Capture Sanctuary
 				</span>
 				<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary font-serif mt-1">
-					Create Post
+					New Moment
 				</h1>
 				<p className="mt-1 text-xs text-text-muted leading-relaxed">
-					Publish to your feed or moments. All files remain strictly under your control.
+					Express yourself in a private space. Free of metrics, full of reflection.
 				</p>
 			</header>
 
-			{/* Sliding segmented controller tab bar */}
-			<div className="p-1 rounded-xl bg-card border border-border/20 mb-6 sm:mb-8 max-w-sm flex items-center shadow-inner">
+			{/* Post/Story Toggle */}
+			<div className="p-1 rounded-xl bg-card border border-border/20 mb-8 max-w-sm flex items-center shadow-inner">
 				<button
 					type="button"
 					onClick={() => {
@@ -235,186 +311,183 @@ export default function CreatePageClient() {
 				</button>
 			</div>
 
-			<form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start">
-				{/* Column 1: Media drop zone */}
-				<div className="space-y-4">
-					<label className="block text-[10px] uppercase tracking-wider font-mono text-text-muted">
-						Post Media
-					</label>
-
-					{preview ? (
-						<div className="relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-card border border-border/30 p-2 sm:p-3 shadow-xl group transition-all duration-300 hover:border-border/60">
-							{isAudio ? (
-								<div className="flex flex-col items-center justify-center py-8 px-4 gap-4 bg-[#0c0c0e]/80 rounded-xl sm:rounded-2xl border border-border/20">
-									<div className="w-12 h-12 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center text-accent animate-pulse">
-										<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-											<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-											<path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-											<line x1="12" y1="19" x2="12" y2="22" />
-										</svg>
-									</div>
-									<audio src={preview} controls className="w-full mt-2" />
-									<span className="text-[9px] uppercase tracking-widest font-mono text-text-muted font-bold">
-										Voice Note Recording
-									</span>
+			<form onSubmit={handleSubmit} className="space-y-8">
+				{/* ── CENTRAL VOICE-FIRST CAPTURE ZONE ── */}
+				<div className="p-6 rounded-[24px] border border-border/30 bg-card/40 flex flex-col items-center justify-center text-center shadow-inner">
+					{isRecording ? (
+						<div className="space-y-4 w-full">
+							<div className="flex flex-col items-center gap-2">
+								<div className="relative w-16 h-16 flex items-center justify-center">
+									<span className="absolute inset-0 rounded-full bg-red-500/20 animate-ping" />
+									<span className="absolute inset-2 rounded-full bg-red-500/40 animate-pulse" />
+									<span className="w-8 h-8 rounded-full bg-red-500" />
 								</div>
-							) : isVideo ? (
-								<video
-									src={preview}
-									controls
-									className="w-full aspect-[4/3] object-cover rounded-xl sm:rounded-2xl border border-border/20"
-								/>
-							) : (
-								<div className="relative w-full aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden border border-border/20">
-									<Image
-										src={preview}
-										alt="Selected Preview"
-										fill
-										className="object-cover"
-									/>
-								</div>
-							)}
-							
-							{/* Clear media button overlay */}
+								<span className="text-xs font-mono font-bold text-text-primary tracking-wider mt-2">
+									RECORDING ({formatDuration(recordingDuration)})
+								</span>
+							</div>
+							<button
+								type="button"
+								onClick={stopRecording}
+								className="px-6 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition-all active:scale-[0.97] cursor-pointer shadow-lg shadow-red-500/20"
+							>
+								Stop & Save Audio
+							</button>
+						</div>
+					) : preview && isAudio ? (
+						<div className="flex flex-col items-center gap-4 w-full">
+							<div className="w-12 h-12 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center text-accent">
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+									<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+									<path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+									<line x1="12" y1="19" x2="12" y2="22" />
+								</svg>
+							</div>
+							<audio src={preview} controls className="w-full max-w-sm mt-1" />
 							<button
 								type="button"
 								onClick={() => {
 									setFile(null);
 									setPreview(null);
 								}}
-								className="absolute top-4 right-4 sm:top-6 sm:right-6 w-8 h-8 rounded-full bg-black/75 hover:bg-black text-white shadow-lg flex items-center justify-center text-sm cursor-pointer transition-transform duration-200 active:scale-95 z-10"
-								aria-label="Remove media"
+								className="text-xs text-red-400 hover:text-red-300 font-mono tracking-wider"
 							>
-								✕
+								✕ Delete Note
 							</button>
 						</div>
 					) : (
-						<div className="space-y-4">
-							{/* Styled Upload Area */}
-							<div
-								onClick={() => fileInputRef.current?.click()}
-								className="w-full aspect-[4/3] rounded-[24px] sm:rounded-[28px] border-2 border-dashed border-border/50 bg-card hover:bg-surface/30 flex flex-col items-center justify-center gap-3.5 cursor-pointer transition-all duration-300 ease-out hover:border-accent hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] group"
-							>
-								<div className="w-10 h-10 rounded-full bg-surface border border-border/40 flex items-center justify-center text-text-muted group-hover:scale-105 group-hover:text-accent group-hover:border-accent/40 transition-all duration-300">
-									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-										<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-										<polyline points="17 8 12 3 7 8" />
-										<line x1="12" y1="3" x2="12" y2="15" />
-									</svg>
-								</div>
-								<div className="text-center px-4">
-									<span className="text-xs text-text-primary font-bold group-hover:text-accent transition-colors duration-200 block">
-										Attach Photo, Video, or Audio
-									</span>
-									<span className="text-[10px] text-text-muted mt-1 block">
-										Drag and drop or browse files
-									</span>
-								</div>
-								{entryType === "story" && (
-									<span className="text-[9px] uppercase tracking-wider font-mono font-bold text-red-400 bg-red-500/5 px-2 py-0.5 rounded border border-red-500/10">
-										Required for Stories
-									</span>
-								)}
-							</div>
-
-							{/* Voice Recording Panel */}
-							<div className="p-4 sm:p-6 rounded-[24px] sm:rounded-[28px] border border-border/30 bg-card/40 flex flex-col items-center justify-center gap-4 text-center">
-								{isRecording ? (
-									<div className="space-y-4 w-full">
-										<div className="flex flex-col items-center gap-2">
-											{/* pulsating recording circle indicator */}
-											<div className="relative w-12 h-12 flex items-center justify-center">
-												<span className="absolute inset-0 rounded-full bg-red-500/20 animate-ping" />
-												<span className="absolute inset-2 rounded-full bg-red-500/40 animate-pulse" />
-												<span className="w-6 h-6 rounded-full bg-red-500" />
-											</div>
-											<span className="text-xs font-mono font-bold text-text-primary tracking-wider mt-2">
-												RECORDING ({formatDuration(recordingDuration)})
-											</span>
-										</div>
-										<button
-											type="button"
-											onClick={stopRecording}
-											className="px-6 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition-all active:scale-[0.97] cursor-pointer shadow-lg shadow-red-500/20"
-										>
-											Stop & Save
-										</button>
-									</div>
-								) : (
-									<div className="space-y-3 w-full">
-										<p className="text-[9px] uppercase tracking-widest font-mono text-text-muted font-bold">
-											Or record voice notes
-										</p>
-										<button
-											type="button"
-											onClick={startRecording}
-											className="h-10 px-5 rounded-xl border border-border bg-surface hover:bg-card text-text-secondary hover:text-text-primary text-xs font-semibold flex items-center justify-center gap-2.5 mx-auto cursor-pointer transition-all duration-200 hover:border-accent"
-										>
-											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" className="text-accent">
-												<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-												<path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-												<line x1="12" y1="19" x2="12" y2="22" />
-											</svg>
-											Record Voice Note
-										</button>
-									</div>
-								)}
-							</div>
-						</div>
-					)}
-					<input
-						ref={fileInputRef}
-						type="file"
-						accept="image/*,video/*,audio/*"
-						onChange={handleFileSelect}
-						className="hidden"
-					/>
-				</div>
-
-				{/* Column 2: Form Details */}
-				<div className="space-y-6 w-full">
-					{/* Text editor option toggle */}
-					{entryType === "post" && (
-						<div className="flex items-center justify-between p-3 rounded-xl bg-card border border-border/25 shadow-inner">
-							<span className="text-xs font-bold text-text-secondary">Notion-style Editor</span>
+						<div className="flex flex-col items-center gap-3 w-full">
 							<button
 								type="button"
-								onClick={() => setUseRichEditor(!useRichEditor)}
-								className={`w-10 h-6 rounded-full transition-colors cursor-pointer relative p-0.5 flex items-center ${
-									useRichEditor ? "bg-accent" : "bg-surface border border-border/40"
-								}`}
+								onClick={startRecording}
+								className="w-16 h-16 rounded-full bg-accent text-background flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+								title="Record Voice Note"
 							>
-								<div className={`w-5 h-5 rounded-full bg-white transition-all shadow-md ${useRichEditor ? "translate-x-4" : "translate-x-0"}`} />
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25">
+									<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+									<path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+									<line x1="12" y1="19" x2="12" y2="22" />
+								</svg>
 							</button>
+							<span className="text-xs text-text-primary font-bold">Hold to talk</span>
+							<p className="text-[10px] text-text-muted leading-relaxed max-w-[280px]">
+								Record an audio voice note directly. Quick-capture is auto-transcribed for index search.
+							</p>
 						</div>
 					)}
+				</div>
 
-					{/* Caption (Standard textarea or BlockNote) */}
-					<div className="space-y-2">
-						<label htmlFor="caption" className="block text-[10px] uppercase tracking-wider font-mono text-text-muted">
-							Post Caption
-						</label>
+				{/* ── EXPANDABLE INPUT OPTIONS ── */}
+				<div className="flex gap-4">
+					<button
+						type="button"
+						onClick={() => setShowTextTab(!showTextTab)}
+						className={`flex-1 py-3 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 ${
+							showTextTab || caption
+								? "bg-accent/5 text-accent border-accent/30 shadow-sm"
+								: "border-border/30 text-text-secondary bg-card hover:bg-surface"
+						}`}
+					>
+						✍ Write Note
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							if (showPhotoTab) {
+								setFile(null);
+								setPreview(null);
+							}
+							setShowPhotoTab(!showPhotoTab);
+						}}
+						className={`flex-1 py-3 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 ${
+							showPhotoTab || (preview && !isAudio)
+								? "bg-accent/5 text-accent border-accent/30 shadow-sm"
+								: "border-border/30 text-text-secondary bg-card hover:bg-surface"
+						}`}
+					>
+						📷 Add Photo/Video
+					</button>
+				</div>
+
+				{/* Photo/Video upload field */}
+				{(showPhotoTab || (preview && !isAudio)) && (
+					<div className="p-4 rounded-[24px] border border-border/30 bg-card text-left space-y-4">
+						{preview && !isAudio ? (
+							<div className="relative rounded-xl overflow-hidden bg-surface border border-border/20 p-1 flex items-center justify-center">
+								{isVideo ? (
+									<video src={preview} controls className="w-full max-h-64 object-cover rounded-lg" />
+								) : (
+									<div className="relative w-full h-64">
+										<Image src={preview} alt="Upload preview" fill className="object-contain" />
+									</div>
+								)}
+								<button
+									type="button"
+									onClick={() => {
+										setFile(null);
+										setPreview(null);
+									}}
+									className="absolute top-4 right-4 w-7 h-7 rounded-full bg-black/85 hover:bg-black text-white text-xs flex items-center justify-center cursor-pointer shadow"
+								>
+									✕
+								</button>
+							</div>
+						) : (
+							<div
+								onClick={() => fileInputRef.current?.click()}
+								className="w-full aspect-[16/9] border-2 border-dashed border-border/50 rounded-xl flex flex-col items-center justify-center gap-2 bg-surface/50 hover:bg-surface hover:border-accent cursor-pointer transition-all duration-200"
+							>
+								<span className="text-2xl">📁</span>
+								<span className="text-xs text-text-secondary font-semibold">Browse photo or video files</span>
+							</div>
+						)}
+					</div>
+				)}
+
+				{/* Text Caption Inputs */}
+				{(showTextTab || caption) && (
+					<div className="p-4 rounded-[24px] border border-border/30 bg-card text-left space-y-4">
+						{entryType === "post" && (
+							<div className="flex items-center justify-between p-2.5 rounded-lg bg-surface border border-border/20">
+								<span className="text-[11px] font-bold text-text-secondary">Notion-style rich editor</span>
+								<button
+									type="button"
+									onClick={() => setUseRichEditor(!useRichEditor)}
+									className={`w-9 h-5 rounded-full transition-colors cursor-pointer relative p-0.5 flex items-center ${
+										useRichEditor ? "bg-accent" : "bg-border"
+									}`}
+								>
+									<div className={`w-4 h-4 rounded-full bg-white transition-all shadow-md ${useRichEditor ? "translate-x-4" : "translate-x-0"}`} />
+								</button>
+							</div>
+						)}
+
 						{useRichEditor && entryType === "post" ? (
 							<BlockNoteEditor onChange={setCaption} />
 						) : (
 							<textarea
-								id="caption"
 								value={caption}
 								onChange={(e) => setCaption(e.target.value)}
-								placeholder={
-									entryType === "story"
-										? "Add a short caption to your story..."
-										: "Write down your thoughts, feelings, or memories..."
-								}
-								rows={entryType === "story" ? 4 : 6}
-								maxLength={2000}
-								className="w-full px-4 py-4 rounded-[20px] border border-border/40 bg-card text-text-primary text-sm placeholder:text-text-muted/50 resize-none focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent transition-all duration-300 leading-relaxed font-serif"
+								placeholder="Write down your thoughts, feelings, or memories..."
+								rows={5}
+								className="w-full px-3 py-3 rounded-xl border border-border bg-surface text-text-primary text-xs placeholder:text-text-muted/50 resize-none focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent font-serif"
 							/>
 						)}
 					</div>
+				)}
 
-					{/* Location (Post only) */}
-					{entryType === "post" && (
+				<input
+					ref={fileInputRef}
+					type="file"
+					accept="image/*,video/*,audio/*"
+					onChange={handleFileSelect}
+					className="hidden"
+				/>
+
+				{/* Location / Mood details (Posts only) */}
+				{entryType === "post" && (
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+						{/* Location */}
 						<div className="space-y-2">
 							<label htmlFor="location" className="block text-[10px] uppercase tracking-wider font-mono text-text-muted">
 								Location
@@ -425,32 +498,27 @@ export default function CreatePageClient() {
 									type="text"
 									value={location}
 									onChange={(e) => setLocation(e.target.value)}
-									placeholder="e.g. Kyoto, Japan or Home Studio"
-									maxLength={200}
-									className="w-full h-11 pl-9 pr-4 rounded-[14px] border border-border/40 bg-card text-text-primary text-xs placeholder:text-text-muted/50 focus:outline-none focus:ring-1 focus:ring-accent/40 focus:border-accent transition-all duration-300"
+									placeholder="e.g. Home Studio"
+									className="w-full h-10 pl-8 pr-3 rounded-lg border border-border bg-card text-text-primary text-xs placeholder:text-text-muted/50 focus:outline-none"
 								/>
-								<span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted text-[11px]">
-									📍
-								</span>
+								<span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs">📍</span>
 							</div>
 						</div>
-					)}
 
-					{/* Mood (Post only) */}
-					{entryType === "post" && (
-						<div className="space-y-2.5">
+						{/* Vibe / Mood */}
+						<div className="space-y-2">
 							<span className="block text-[10px] uppercase tracking-wider font-mono text-text-muted">
 								Vibe
 							</span>
-							<div className="flex flex-wrap gap-2">
+							<div className="flex flex-wrap gap-1.5">
 								{MOODS.map((m) => (
 									<button
 										key={m.name}
 										type="button"
 										onClick={() => setMood(mood === m.name ? "" : m.name)}
-										className={`px-3 py-1.5 rounded-[12px] text-xs font-semibold transition-all duration-300 cursor-pointer active:scale-95 border ${
+										className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all duration-200 border cursor-pointer ${
 											mood === m.name
-												? `bg-gradient-to-r ${m.color} shadow-sm shadow-accent/5`
+												? `bg-gradient-to-r ${m.color} shadow-sm border-accent/20`
 												: "border-border/40 text-text-secondary bg-card hover:bg-surface"
 										}`}
 									>
@@ -459,29 +527,17 @@ export default function CreatePageClient() {
 								))}
 							</div>
 						</div>
-					)}
+					</div>
+				)}
 
-					{/* Story Info Alert */}
-					{entryType === "story" && (
-						<div className="p-4 rounded-[20px] bg-accent/5 border border-accent/20 text-[11px] text-text-secondary leading-relaxed flex items-start gap-2">
-							<span className="text-accent">ℹ</span>
-							<span>Stories expire automatically 24 hours after they are published, keeping your feed pristine.</span>
-						</div>
-					)}
-
-					{/* Submit button */}
-					<button
-						type="submit"
-						disabled={isSubmitting}
-						className="w-full h-11 rounded-[14px] bg-accent text-background text-xs font-bold transition-all duration-300 hover:opacity-95 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer shadow-lg shadow-accent/5"
-					>
-						{isSubmitting
-							? "Publishing..."
-							: entryType === "story"
-								? "Publish Story"
-								: "Publish Post"}
-					</button>
-				</div>
+				{/* Save button */}
+				<button
+					type="submit"
+					disabled={isSubmitting || (!file && !caption)}
+					className="w-full h-11 rounded-[14px] bg-accent text-background text-xs font-bold transition-all duration-300 hover:opacity-95 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none cursor-pointer shadow-lg shadow-accent/5 font-mono uppercase tracking-wider"
+				>
+					{isSubmitting ? "Sealing moment..." : "Seal Entry"}
+				</button>
 			</form>
 		</div>
 	);

@@ -34,6 +34,14 @@ interface Post {
 	createdAt: string;
 }
 
+const MOOD_TYPES = [
+	{ name: "Grateful", color: "bg-[#f59e0b]" },
+	{ name: "Calm", color: "bg-[#10b981]" },
+	{ name: "Reflective", color: "bg-[#6366f1]" },
+	{ name: "Excited", color: "bg-[#ec4899]" },
+	{ name: "Tired", color: "bg-[#84cc16]" },
+] as const;
+
 export default function HomePageClient() {
 	const { data: session } = useSession();
 	const [posts, setPosts] = useState<Post[]>([]);
@@ -48,7 +56,7 @@ export default function HomePageClient() {
 		if (fetchingRef.current) return;
 		fetchingRef.current = true;
 		try {
-			const res = await fetch(`/api/posts?limit=6&offset=${currentOffset}`, { credentials: "include" });
+			const res = await fetch(`/api/posts?limit=10&offset=${currentOffset}`, { credentials: "include" });
 			const json = (await res.json()) as { success: boolean; data: Post[]; hasMore: boolean };
 			if (json.success) {
 				if (isInitial) {
@@ -106,7 +114,6 @@ export default function HomePageClient() {
 					method: "DELETE",
 					credentials: "include",
 				});
-				// Remove local state post
 				setPosts((prev) => prev.filter((p) => p.id !== postId));
 				setOffset((prev) => Math.max(0, prev - 1));
 			} catch {
@@ -115,10 +122,38 @@ export default function HomePageClient() {
 		}
 	};
 
+	// Log a mobile mood check-in directly
+	const handleMoodCheckIn = async (moodName: string) => {
+		try {
+			await fetch("/api/posts", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					mood: moodName,
+					caption: `Logged today as a ${moodName.toLowerCase()} day.`,
+				}),
+			});
+			// Refresh feed
+			fetchPosts(0, true);
+		} catch (e) {
+			console.error("Mood log failed:", e);
+		}
+	};
+
+	// Resurface a memory "On This Day" (older than 2 days)
+	const memoryPost = posts.find((p) => {
+		const createdDate = new Date(p.createdAt).getTime();
+		return createdDate < Date.now() - 2 * 24 * 60 * 60 * 1000;
+	});
+
+	// Variables for chapter grouping logic
+	let lastLocation = "";
+	let lastTime = 0;
+
 	return (
 		<div className="py-8 sm:py-12 w-full animate-slide-up select-none">
 			{/* Greeting */}
-			<header className="mb-10">
+			<header className="mb-10 text-left">
 				<p className="text-[10px] uppercase tracking-[0.2em] font-mono text-text-muted mb-2">
 					{getDateString()}
 				</p>
@@ -127,19 +162,55 @@ export default function HomePageClient() {
 				</h1>
 			</header>
 
+			{/* MOBILE-ONLY MOOD DOTS CHECK-IN */}
+			<div className="p-5 rounded-[20px] bg-card/60 border border-border/20 text-left mb-8 sm:hidden">
+				<p className="text-[9px] text-text-muted font-mono uppercase tracking-wider">Mood Check-In</p>
+				<h3 className="text-sm font-semibold text-text-primary mt-0.5">How&apos;s today feeling?</h3>
+				<div className="flex gap-3 mt-3">
+					{MOOD_TYPES.map((m) => (
+						<button
+							key={m.name}
+							onClick={() => handleMoodCheckIn(m.name)}
+							className={`w-6 h-6 rounded-full ${m.color} hover:scale-110 active:scale-95 transition-all cursor-pointer shadow border border-white/5`}
+							title={`Log today: ${m.name}`}
+						/>
+					))}
+				</div>
+			</div>
+
 			{/* Stories Carousel */}
 			<StoriesCarousel />
 
 			{/* Collections Row */}
 			<CollectionsRow />
 
-			{/* Reflection Prompt (Apple Journal style) */}
+			{/* "ON THIS DAY" RESURFACING BLOCK */}
+			{memoryPost && (
+				<div className="mb-10 p-6 rounded-[24px] bg-[#1e1511] border border-[#d97706]/20 text-left shadow-lg relative overflow-hidden animate-fade-in">
+					<div className="absolute right-4 top-4 text-[9px] font-mono font-bold text-[#d97706] uppercase tracking-widest bg-[#d97706]/10 px-2.5 py-1 rounded-full border border-[#d97706]/20">
+						On This Day
+					</div>
+					<span className="text-[10px] text-[#f59e0b] font-mono uppercase tracking-wider font-semibold">
+						{new Date(memoryPost.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+					</span>
+					<p className="mt-3.5 text-base text-text-primary font-serif italic leading-relaxed">
+						&ldquo;{memoryPost.caption}&rdquo;
+					</p>
+					{memoryPost.location && (
+						<span className="mt-3 block text-[10px] text-text-muted">
+							📍 {memoryPost.location}
+						</span>
+					)}
+				</div>
+			)}
+
+			{/* Reflection Prompt Link */}
 			<Link
 				href="/create"
 				className="group block p-5 rounded-[20px] bg-card border border-border/40 hover:border-border/80 transition-all duration-300 ease-out mb-12 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] active:scale-[0.99]"
 			>
 				<div className="flex items-center justify-between gap-4">
-					<div>
+					<div className="text-left">
 						<h3 className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors duration-200">
 							New Entry
 						</h3>
@@ -156,7 +227,7 @@ export default function HomePageClient() {
 				</div>
 			</Link>
 
-			{/* Today's memories */}
+			{/* Recent Reflections Feed */}
 			<section>
 				<div className="flex items-center justify-between mb-6">
 					<h2 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted">
@@ -185,21 +256,69 @@ export default function HomePageClient() {
 					/>
 				) : (
 					<div className="space-y-6">
-						{posts.map((post) => (
-							<PostCard
-								key={post.id}
-								id={post.id}
-								username={session?.user?.name ?? "You"}
-								userImage={session?.user?.image}
-								mediaUrl={post.mediaUrl}
-								mediaType={post.mediaType}
-								caption={post.caption}
-								location={post.location}
-								mood={post.mood}
-								createdAt={post.createdAt}
-								onDelete={handleDelete}
-							/>
-						))}
+						{posts.map((post) => {
+							const postTime = new Date(post.createdAt).getTime();
+							const isTextOnly = !post.mediaUrl;
+							const formattedDate = new Date(post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+							// Proximity checking for chapter groups
+							const gap = Math.abs(postTime - lastTime) / (1000 * 60 * 60 * 24);
+							const showDivider = post.location && (post.location.toLowerCase() !== lastLocation.toLowerCase() || gap > 3);
+
+							if (showDivider) {
+								lastLocation = post.location!;
+								lastTime = postTime;
+							}
+
+							return (
+								<div key={post.id} className="space-y-4">
+									{showDivider && (
+										<div className="py-2.5 text-left border-b border-border/20">
+											<span className="text-[10px] text-accent font-mono uppercase tracking-[0.2em] font-bold">
+												{post.location?.toLowerCase()} chapter
+											</span>
+										</div>
+									)}
+
+									{isTextOnly ? (
+										/* Text-only quiet typographic serif quote */
+										<div className="py-6 px-5 border-l border-accent pl-6 text-left bg-card/25 rounded-r-[20px] transition-all hover:bg-card/45">
+											<p className="text-base text-text-primary font-serif leading-relaxed italic">
+												&ldquo;{post.caption}&rdquo;
+											</p>
+											<div className="mt-3.5 flex items-center gap-2.5 text-[9px] text-text-muted font-mono uppercase tracking-wider">
+												<span>{formattedDate}</span>
+												{post.location && (
+													<>
+														<span>&middot;</span>
+														<span>📍 {post.location}</span>
+													</>
+												)}
+												<button
+													onClick={() => handleDelete(post.id)}
+													className="text-red-400/80 hover:text-red-300 font-bold ml-auto cursor-pointer"
+												>
+													Delete
+												</button>
+											</div>
+										</div>
+									) : (
+										<PostCard
+											id={post.id}
+											username={session?.user?.name ?? "You"}
+											userImage={session?.user?.image}
+											mediaUrl={post.mediaUrl}
+											mediaType={post.mediaType}
+											caption={post.caption}
+											location={post.location}
+											mood={post.mood}
+											createdAt={post.createdAt}
+											onDelete={handleDelete}
+										/>
+									)}
+								</div>
+							);
+						})}
 
 						{/* Infinite Scroll Trigger */}
 						{hasMore && (

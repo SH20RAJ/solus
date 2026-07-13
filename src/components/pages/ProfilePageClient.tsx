@@ -68,6 +68,24 @@ export default function ProfilePageClient() {
 
 	const primaryMood = moodsList[0]?.mood ?? "None";
 
+	const handleExportArchive = () => {
+		const archiveData = {
+			user: session?.user,
+			exportedAt: new Date().toISOString(),
+			posts: posts,
+			collections: collections,
+		};
+		const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+			JSON.stringify(archiveData, null, 2)
+		)}`;
+		const downloadAnchor = document.createElement("a");
+		downloadAnchor.setAttribute("href", jsonString);
+		downloadAnchor.setAttribute("download", `solus-archive-${session?.user?.name || "user"}.json`);
+		document.body.appendChild(downloadAnchor);
+		downloadAnchor.click();
+		downloadAnchor.remove();
+	};
+
 	const handleSignOut = () => {
 		signOut({ fetchOptions: { onSuccess: () => window.location.assign("/login") } });
 	};
@@ -126,7 +144,7 @@ export default function ProfilePageClient() {
 	return (
 		<div className="py-8 sm:py-12 w-full animate-slide-up select-none font-sans">
 			{/* Profile Info Header */}
-			<div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 p-6 rounded-[24px] border border-border/30 bg-card/45 backdrop-blur-md">
+			<div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 p-6 rounded-[24px] border border-border/30 bg-card/45 backdrop-blur-md text-left">
 				{session?.user?.image ? (
 					<Image
 						src={session.user.image}
@@ -141,7 +159,7 @@ export default function ProfilePageClient() {
 					</div>
 				)}
 
-				<div className="flex-1 text-center sm:text-left space-y-2 w-full">
+				<div className="flex-1 space-y-2 w-full">
 					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 						<div>
 							<h1 className="text-xl font-bold tracking-tight text-text-primary">
@@ -149,12 +167,20 @@ export default function ProfilePageClient() {
 							</h1>
 							<p className="text-xs text-text-muted mt-0.5">{session?.user?.email}</p>
 						</div>
-						<button
-							onClick={handleSignOut}
-							className="h-8 px-4 rounded-full border border-border/40 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-card transition-all cursor-pointer"
-						>
-							Sign Out
-						</button>
+						<div className="flex gap-2">
+							<button
+								onClick={handleExportArchive}
+								className="h-8 px-4 rounded-full bg-accent text-background text-xs font-semibold hover:bg-accent/90 transition-all cursor-pointer shadow"
+							>
+								Export Archive
+							</button>
+							<button
+								onClick={handleSignOut}
+								className="h-8 px-4 rounded-full border border-border/40 text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-card transition-all cursor-pointer"
+							>
+								Sign Out
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

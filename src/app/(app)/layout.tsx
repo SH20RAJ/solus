@@ -1,5 +1,6 @@
 import Sidebar from "@/components/Sidebar";
 import BottomNav from "@/components/BottomNav";
+import AdaptiveTintWrapper from "@/components/AdaptiveTintWrapper";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -18,7 +19,7 @@ export default async function AppLayout({
 	}
 
 	return (
-		<div className="min-h-screen bg-background text-text-primary">
+		<AdaptiveTintWrapper>
 			{/* Desktop sidebar */}
 			<Sidebar />
 
@@ -31,6 +32,6 @@ export default async function AppLayout({
 
 			{/* Mobile bottom nav */}
 			<BottomNav />
-		</div>
+		</AdaptiveTintWrapper>
 	);
 }
