@@ -98,11 +98,16 @@ export default function Sidebar() {
 			const date = new Date(p.createdAt);
 			const formattedDate = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 			const moodConfig = MOOD_TYPES.find((m) => m.name.toLowerCase() === p.mood?.toLowerCase());
+			const year = date.getFullYear();
+			const month = String(date.getMonth() + 1).padStart(2, "0");
+			const day = String(date.getDate()).padStart(2, "0");
+			const slug = `${year}-${month}-${day}`;
 			return {
 				id: p.id,
 				date: formattedDate,
 				mood: p.mood,
 				color: moodConfig?.color ?? "bg-text-secondary",
+				slug,
 			};
 		});
 
@@ -209,7 +214,7 @@ export default function Sidebar() {
 							{dayThreadItems.map((item) => (
 								<Link
 									key={item.id}
-									href={`/posts/${item.id}`}
+									href={`/day/${item.slug}`}
 									className="flex items-center gap-3.5 group relative hover:opacity-80 transition-opacity"
 								>
 									{/* Heartbeat pulse dot */}

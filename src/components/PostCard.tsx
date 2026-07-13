@@ -6,6 +6,7 @@ import Link from "next/link";
 import Dropdown from "@/components/ui/Dropdown";
 import CommentsModal from "@/components/CommentsModal";
 import { formatCaption } from "@/utils/text";
+import { renderMarkdown } from "@/utils/markdown";
 import { useLikes } from "@/lib/api-client";
 import { mutate } from "swr";
 
@@ -180,9 +181,9 @@ export default function PostCard({
 				</div>
 
 				{caption && (
-					<p className="text-sm text-text-primary leading-relaxed font-serif italic mt-2 mb-6">
-						{formatCaption(caption)}
-					</p>
+					<div className="text-sm text-text-primary leading-relaxed font-serif italic mt-2 mb-6 prose-p:italic">
+						{renderMarkdown(caption)}
+					</div>
 				)}
 
 				<div className="flex items-center justify-between pt-3 border-t border-border/20">
@@ -358,9 +359,11 @@ export default function PostCard({
 				{caption && (() => {
 					const { content, isTruncated } = getTruncatedCaption(caption);
 					return (
-						<p className="text-xs text-text-primary leading-relaxed font-serif">
-							<span className="font-bold mr-2 text-[10px] font-sans">{username}</span>
-							{formatCaption(content)}
+						<div className="text-xs text-text-primary leading-relaxed font-serif">
+							<span className="font-bold mr-2 text-[10px] font-sans block mb-1">{username}</span>
+							<div className="prose-p:inline font-serif text-text-secondary">
+								{renderMarkdown(content)}
+							</div>
 							{isTruncated && (
 								<button
 									onClick={() => setIsExpanded(true)}
@@ -369,7 +372,7 @@ export default function PostCard({
 									more
 								</button>
 							)}
-						</p>
+						</div>
 					);
 				})()}
 			</div>

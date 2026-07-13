@@ -7,6 +7,7 @@ import { useSession, signOut } from "@/lib/auth-client";
 import { usePosts, useCollections } from "@/lib/api-client";
 import Skeleton from "@/components/Skeleton";
 import PostCard from "@/components/PostCard";
+import FileManager from "@/components/FileManager";
 import { mutate } from "swr";
 
 interface Post {
@@ -34,6 +35,7 @@ interface Highlight {
 	title: string;
 	coverUrl: string;
 	postIds: string[];
+	posts?: Post[];
 }
 
 export default function ProfilePageClient() {
@@ -74,11 +76,33 @@ export default function ProfilePageClient() {
 	const [selectedHighlightPosts, setSelectedHighlightPosts] = useState<string[]>([]);
 	const [viewingHighlight, setViewingHighlight] = useState<Highlight | null>(null);
 	const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
+	const [showFileManager, setShowFileManager] = useState(false);
 
 	// Calculate statistics
 	const totalDays = posts.length > 0
 		? Math.ceil(Math.abs(new Date().getTime() - new Date(posts[posts.length - 1].createdAt).getTime()) / (1000 * 60 * 60 * 24))
 		: 0;
+
+	// Calculate profile calendar cells
+	const profileFirstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getDay();
+	const profileDaysCount = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+	const profileCells = [];
+	for (let i = 0; i < profileFirstDay; i++) {
+		profileCells.push({ day: null, dateStr: null, post: null });
+	}
+	for (let d = 1; d <= profileDaysCount; d++) {
+		const cellDate = new Date(new Date().getFullYear(), new Date().getMonth(), d);
+		const cellDateStr = cellDate.toDateString();
+		const dayPost = posts.find((p) => p.mood && new Date(p.createdAt).toDateString() === cellDateStr);
+		const year = cellDate.getFullYear();
+		const month = String(cellDate.getMonth() + 1).padStart(2, "0");
+		const dayStr = String(d).padStart(2, "0");
+		profileCells.push({
+			day: d,
+			dateStr: `${year}-${month}-${dayStr}`,
+			post: dayPost,
+		});
+	}
 
 	// Mood breakdown
 	const moodCounts: Record<string, number> = {};
@@ -167,8 +191,9 @@ export default function ProfilePageClient() {
 	}
 
 	return (
-		<div className="py-8 sm:py-12 w-full animate-slide-up select-none font-sans max-w-[640px] mx-auto">
-			{/* Profile Info Header */}
+		<div className="py-8 sm:py-12 w-full select-none font-sans max-w-[640px] mx-auto">
+			<div className="animate-slide-up space-y-8">
+				{/* Profile Info Header */}
 			<div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 p-6 rounded-[24px] border border-border/30 bg-card/45 backdrop-blur-md text-left">
 				{session?.user?.image ? (
 					<Image
@@ -252,7 +277,7 @@ export default function ProfilePageClient() {
 			{/* VAULT DIRECTORY OPTIONS - UNIFIED REDIRECT MATRIX */}
 			<div className="mb-8 text-left">
 				<h3 className="text-[10px] text-text-muted font-mono uppercase tracking-wider mb-4">Vault Directories</h3>
-				<div className="grid grid-cols-2 gap-4">
+				<div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
 					<Link
 						href="/timeline"
 						className="p-5 rounded-[20px] bg-card border border-border/30 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 flex flex-col gap-2 group shadow-sm text-left"
@@ -275,7 +300,7 @@ export default function ProfilePageClient() {
 					>
 						<span className="text-xl">🔮</span>
 						<h4 className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-none">Stories Archive</h4>
-						<p className="text-[10px] text-text-secondary leading-normal">Explore past 24h moment uploads.</p>
+						<p className="text-[10px] text-text-secondary leading-normal">Explore past 24h story uploads.</p>
 					</Link>
 					<Link
 						href="/collections"
@@ -284,6 +309,22 @@ export default function ProfilePageClient() {
 						<span className="text-xl">📖</span>
 						<h4 className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-none">Journal Books</h4>
 						<p className="text-[10px] text-text-secondary leading-normal">Open curated diaries & photo albums.</p>
+					</Link>
+					<button
+						onClick={() => setShowFileManager(true)}
+						className="p-5 rounded-[20px] bg-card border border-border/30 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 flex flex-col gap-2 group shadow-sm text-left cursor-pointer focus:outline-none"
+					>
+						<span className="text-xl">🔒</span>
+						<h4 className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-none">Private Locker</h4>
+						<p className="text-[10px] text-text-secondary leading-normal">Secure folders, text logs & files.</p>
+					</button>
+					<Link
+						href="/calendar"
+						className="p-5 rounded-[20px] bg-card border border-border/30 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 flex flex-col gap-2 group shadow-sm text-left"
+					>
+						<span className="text-xl">🌈</span>
+						<h4 className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-none">Vibe Calendar</h4>
+						<p className="text-[10px] text-text-secondary leading-normal">Explore your logged feelings over days.</p>
 					</Link>
 				</div>
 			</div>
@@ -342,6 +383,56 @@ export default function ProfilePageClient() {
 				</div>
 			)}
 
+			{/* Sensory Mood Calendar Widget */}
+			<div className="mb-8 p-6 rounded-[24px] border border-border/30 bg-card shadow-sm text-left">
+				<div className="flex items-center justify-between mb-4">
+					<h2 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted">Mood Calendar</h2>
+					<Link
+						href="/calendar"
+						className="text-[10px] font-mono text-accent hover:underline flex items-center gap-1"
+					>
+						Full Calendar →
+					</Link>
+				</div>
+				<p className="text-[10px] text-text-muted mb-4 font-mono leading-normal">
+					Visual log of this month&apos;s daily vibes. Click any day dot to see reflections.
+				</p>
+				<div className="grid grid-cols-7 gap-2 max-w-sm">
+					{["S", "M", "T", "W", "T", "F", "S"].map((w, idx) => (
+						<span key={idx} className="text-[9px] font-mono text-text-muted text-center font-bold">
+							{w}
+						</span>
+					))}
+					{profileCells.map((cell, idx) => {
+						if (!cell.day) return <div key={`p-empty-${idx}`} className="w-7 h-7" />;
+
+						const cellMood = cell.post?.mood;
+						const moodColors: Record<string, string> = {
+							happy: "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.35)] border-amber-500/20 text-amber-950",
+							calm: "bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.35)] border-sky-500/20 text-sky-950",
+							grateful: "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.35)] border-emerald-500/20 text-emerald-950",
+							reflective: "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.35)] border-indigo-500/20 text-indigo-950",
+							tired: "bg-zinc-500 shadow-[0_0_8px_rgba(115,115,115,0.35)] border-zinc-500/20 text-zinc-950",
+						};
+
+						const colorClass = cellMood
+							? moodColors[cellMood.toLowerCase()] ?? "bg-accent/40 text-background"
+							: "bg-card border-border/10 hover:border-border/30 text-text-secondary";
+
+						return (
+							<Link
+								key={cell.dateStr}
+								href={`/day/${cell.dateStr}`}
+								className={`w-7 h-7 rounded-full border flex items-center justify-center text-[9px] font-mono hover:scale-110 active:scale-95 transition-all ${colorClass}`}
+								title={cellMood ? `${cell.dateStr}: ${cellMood}` : cell.dateStr || ""}
+							>
+								{cell.day}
+							</Link>
+						);
+					})}
+				</div>
+			</div>
+
 			{/* Memory Directory List */}
 			<div className="border border-border/30 rounded-[24px] bg-card overflow-hidden text-left">
 				<div className="px-6 py-4 border-b border-border/20 flex items-center justify-between">
@@ -397,6 +488,7 @@ export default function ProfilePageClient() {
 					</div>
 				)}
 			</div>
+		</div>
 
 			{/* Detail Overlay Card */}
 			{selectedPost && (
@@ -574,6 +666,14 @@ export default function ProfilePageClient() {
 						</div>
 					</div>
 				</div>
+			)}
+
+			{showFileManager && (
+				<FileManager
+					isOpen={showFileManager}
+					onClose={() => setShowFileManager(false)}
+					userId={session?.user?.id ?? "anonymous"}
+				/>
 			)}
 		</div>
 	);

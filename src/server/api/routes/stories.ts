@@ -28,7 +28,7 @@ const stories = new Hono()
 			"json",
 			z.object({
 				mediaUrl: z.string(),
-				mediaType: z.enum(["image", "video"]),
+				mediaType: z.enum(["image", "video", "audio"]),
 				caption: z.string().optional(),
 			})
 		),

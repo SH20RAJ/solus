@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 import TiptapEditor from "@/components/TiptapEditor";
 import { usePosts } from "@/lib/api-client";
+import { htmlToMarkdown } from "@/utils/markdown";
 
 const MOODS = [
 	{ name: "Happy", color: "from-amber-500/10 to-yellow-500/10 text-amber-300 border-amber-500/30" },
@@ -146,12 +147,14 @@ export default function CreatePostPageClient() {
 				mediaUrl = presignData.data.uploadUrl;
 			}
 
+			const markdownCaption = caption ? htmlToMarkdown(caption) : undefined;
+
 			await fetch("/api/posts", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
 				body: JSON.stringify({
-					caption: caption || undefined,
+					caption: markdownCaption,
 					mediaUrl,
 					mediaType,
 					location: location || undefined,
