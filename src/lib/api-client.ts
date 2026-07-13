@@ -11,7 +11,7 @@ const client = hc<AppType>("/");
 export { client };
 
 // Generic fetcher for SWR
-async function fetcher<T>(url: string): Promise<T> {
+export async function fetcher<T>(url: string): Promise<T> {
 	const res = await fetch(url, { credentials: "include" });
 
 	if (!res.ok) {
