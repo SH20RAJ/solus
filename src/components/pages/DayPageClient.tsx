@@ -2,7 +2,7 @@
 
 import { usePosts } from "@/lib/api-client";
 import PostCard from "@/components/PostCard";
-import Skeleton from "@/components/Skeleton";
+import { PostCardSkeleton } from "@/components/Skeleton";
 import Link from "next/link";
 
 interface DayPageClientProps {
@@ -78,8 +78,8 @@ export default function DayPageClient({ slug }: DayPageClientProps) {
 			{/* Loading / Error states */}
 			{isLoading && (
 				<div className="space-y-6">
-					<Skeleton variant="post" />
-					<Skeleton variant="post" />
+					<PostCardSkeleton />
+					<PostCardSkeleton />
 				</div>
 			)}
 
