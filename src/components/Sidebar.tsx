@@ -10,6 +10,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 const NAV_ITEMS = [
 	{ href: "/home", label: "Home", icon: HomeIcon },
 	{ href: "/timeline", label: "Timeline", icon: ClockIcon },
+	{ href: "/reels", label: "Reels", icon: ReelsIcon },
 	{ href: "/stories", label: "Stories", icon: StoriesIcon },
 	{ href: "/collections", label: "Collections", icon: CollectionsIcon },
 	{ href: "/profile", label: "Profile", icon: ProfileIcon },
@@ -78,7 +79,7 @@ export default function Sidebar() {
 
 	return (
 		<aside
-			className={`hidden sm:flex flex-col h-screen border-r border-border/40 bg-[#0c0c0e]/95 backdrop-blur-md fixed left-0 top-0 z-40 select-none font-sans justify-between transition-all duration-300 ease-in-out ${
+			className={`hidden sm:flex flex-col h-screen border-r border-border/40 bg-card/95 backdrop-blur-md fixed left-0 top-0 z-40 select-none font-sans justify-between transition-all duration-300 ease-in-out ${
 				isCollapsed ? "w-[72px]" : "w-[260px]"
 			}`}
 		>
@@ -275,7 +276,7 @@ export default function Sidebar() {
 									onClick={() => setShowUserMenu(false)}
 								/>
 								<div
-									className={`absolute z-20 p-1.5 rounded-xl border border-border/40 bg-[#0c0c0e]/95 backdrop-blur-md shadow-xl animate-slide-up flex flex-col gap-0.5 ${
+									className={`absolute z-20 p-1.5 rounded-xl border border-border/40 bg-card/95 backdrop-blur-md shadow-xl animate-slide-up flex flex-col gap-0.5 ${
 										isCollapsed ? "bottom-14 left-1 w-44" : "bottom-14 left-0 right-0"
 									}`}
 								>
@@ -416,6 +417,21 @@ function SparklesIcon({ size = 20 }: { size?: number }) {
 			<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z" />
 			<path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5Z" />
 			<path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1Z" />
+		</svg>
+	);
+}
+
+function ReelsIcon({ size = 20 }: { size?: number }) {
+	return (
+		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+			<rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18" />
+			<line x1="7" x2="7" y1="2" y2="22" />
+			<line x1="17" x2="17" y1="2" y2="22" />
+			<line x1="2" x2="22" y1="12" y2="12" />
+			<line x1="2" x2="7" y1="7" y2="7" />
+			<line x1="2" x2="7" y1="17" y2="17" />
+			<line x1="17" x2="22" y1="7" y2="7" />
+			<line x1="17" x2="22" y1="17" y2="17" />
 		</svg>
 	);
 }

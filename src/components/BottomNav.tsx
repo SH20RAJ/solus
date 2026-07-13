@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const NAV_ITEMS = [
 	{ href: "/home", label: "Home", icon: HomeIcon },
 	{ href: "/timeline", label: "Timeline", icon: TimelineIcon },
+	{ href: "/reels", label: "Reels", icon: ReelsIcon },
 	{ href: "/create", label: "Create", icon: PlusIcon },
 	{ href: "/stories", label: "Stories", icon: StoriesIcon },
 	{ href: "/profile", label: "Profile", icon: ProfileIcon },
@@ -91,6 +92,21 @@ function ProfileIcon({ size = 24 }: { size?: number }) {
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
 			<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
 			<circle cx="12" cy="7" r="4" />
+		</svg>
+	);
+}
+
+function ReelsIcon({ size = 24 }: { size?: number }) {
+	return (
+		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+			<rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18" />
+			<line x1="7" x2="7" y1="2" y2="22" />
+			<line x1="17" x2="17" y1="2" y2="22" />
+			<line x1="2" x2="22" y1="12" y2="12" />
+			<line x1="2" x2="7" y1="7" y2="7" />
+			<line x1="2" x2="7" y1="17" y2="17" />
+			<line x1="17" x2="22" y1="7" y2="7" />
+			<line x1="17" x2="22" y1="17" y2="17" />
 		</svg>
 	);
 }

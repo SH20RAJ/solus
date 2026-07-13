@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export default function ThemeToggle() {
 	const [theme, setTheme] = useState<"dark" | "light">("dark");
+	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
 		const stored = localStorage.getItem("solus-theme") as "dark" | "light" | null;
@@ -15,6 +16,7 @@ export default function ThemeToggle() {
 		} else {
 			document.documentElement.classList.remove("light");
 		}
+		setMounted(true);
 	}, []);
 
 	const toggleTheme = () => {
@@ -28,6 +30,14 @@ export default function ThemeToggle() {
 			document.documentElement.classList.remove("light");
 		}
 	};
+
+	if (!mounted) {
+		return (
+			<div className="w-8 h-8 rounded-full bg-card border border-border/40 flex items-center justify-center opacity-50 select-none">
+				<div className="w-3.5 h-3.5 rounded-full bg-text-secondary/20 animate-pulse" />
+			</div>
+		);
+	}
 
 	return (
 		<button
