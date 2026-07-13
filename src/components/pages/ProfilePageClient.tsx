@@ -26,7 +26,14 @@ interface PostsResponse {
 
 interface CollectionsResponse {
 	success: boolean;
-	data: Array<{ id: string }>;
+	data: Array<{ id: string; title: string; description?: string; coverUrl?: string }>;
+}
+
+interface Highlight {
+	id: string;
+	title: string;
+	coverUrl: string;
+	postIds: string[];
 }
 
 export default function ProfilePageClient() {
@@ -34,25 +41,44 @@ export default function ProfilePageClient() {
 	const { data: postsData } = usePosts();
 	const { data: collectionsData } = useCollections();
 	const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-	const [activeTab, setActiveTab] = useState<"directory" | "reels">("directory");
-	
-	// Reels player states
-	const [activeReelIndex, setActiveReelIndex] = useState<number | null>(null);
 
 	const posts = (postsData as PostsResponse)?.data ?? [];
 	const collections = (collectionsData as CollectionsResponse)?.data ?? [];
 	const postCount = posts.length;
 	const collectionCount = collections.length;
 
-	// Calculate statistics
-	const totalDays = posts.length > 0 
-		? Math.ceil(Math.abs(new Date().getTime() - new Date(posts[posts.length - 1].createdAt).getTime()) / (1000 * 60 * 60 * 24)) 
-		: 0;
+	// Mock highlights matching profile design
+	const [highlights, setHighlights] = useState<Highlight[]>([
+		{
+			id: "h1",
+			title: "Tokyo 2026",
+			coverUrl: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=200&auto=format&fit=crop",
+			postIds: [],
+		},
+		{
+			id: "h2",
+			title: "Summer Vibes",
+			coverUrl: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=200&auto=format&fit=crop",
+			postIds: [],
+		},
+		{
+			id: "h3",
+			title: "Daily Coffee",
+			coverUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&auto=format&fit=crop",
+			postIds: [],
+		},
+	]);
 
-	// Filter video posts for reels
-	const videoReels = posts.filter(
-		(p) => p.mediaType === "video" || p.mediaUrl?.endsWith(".mp4")
-	);
+	const [showHighlightCreator, setShowHighlightCreator] = useState(false);
+	const [newHighlightTitle, setNewHighlightTitle] = useState("");
+	const [selectedHighlightPosts, setSelectedHighlightPosts] = useState<string[]>([]);
+	const [viewingHighlight, setViewingHighlight] = useState<Highlight | null>(null);
+	const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
+
+	// Calculate statistics
+	const totalDays = posts.length > 0
+		? Math.ceil(Math.abs(new Date().getTime() - new Date(posts[posts.length - 1].createdAt).getTime()) / (1000 * 60 * 60 * 24))
+		: 0;
 
 	// Mood breakdown
 	const moodCounts: Record<string, number> = {};
@@ -107,25 +133,24 @@ export default function ProfilePageClient() {
 		}
 	};
 
-	const handleNextReel = () => {
-		if (activeReelIndex === null) return;
-		if (activeReelIndex < videoReels.length - 1) {
-			setActiveReelIndex(activeReelIndex + 1);
-		} else {
-			setActiveReelIndex(null); // End of list
-		}
-	};
+	// Save highlight
+	const handleCreateHighlight = () => {
+		if (!newHighlightTitle.trim()) return;
+		const matchingPostWithMedia = posts.find((p) => p.mediaUrl && selectedHighlightPosts.includes(p.id));
+		const cover = matchingPostWithMedia?.mediaUrl?.split(",")[0] || "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=200&auto=format&fit=crop";
 
-	const handlePrevReel = () => {
-		if (activeReelIndex === null) return;
-		if (activeReelIndex > 0) {
-			setActiveReelIndex(activeReelIndex - 1);
-		} else {
-			setActiveReelIndex(null);
-		}
-	};
+		const newHighlight: Highlight = {
+			id: `h-${Date.now()}`,
+			title: newHighlightTitle,
+			coverUrl: cover,
+			postIds: selectedHighlightPosts,
+		};
 
-	const activeReel = activeReelIndex !== null ? videoReels[activeReelIndex] : null;
+		setHighlights((prev) => [...prev, newHighlight]);
+		setNewHighlightTitle("");
+		setSelectedHighlightPosts([]);
+		setShowHighlightCreator(false);
+	};
 
 	if (isPending) {
 		return (
@@ -142,7 +167,7 @@ export default function ProfilePageClient() {
 	}
 
 	return (
-		<div className="py-8 sm:py-12 w-full animate-slide-up select-none font-sans">
+		<div className="py-8 sm:py-12 w-full animate-slide-up select-none font-sans max-w-[640px] mx-auto">
 			{/* Profile Info Header */}
 			<div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 p-6 rounded-[24px] border border-border/30 bg-card/45 backdrop-blur-md text-left">
 				{session?.user?.image ? (
@@ -185,6 +210,84 @@ export default function ProfilePageClient() {
 				</div>
 			</div>
 
+			{/* INSTAGRAM-STYLE HIGHLIGHTS ROW */}
+			<div className="mb-8 text-left">
+				<h3 className="text-[10px] text-text-muted font-mono uppercase tracking-wider mb-3">Highlights</h3>
+				<div className="flex items-center gap-4 overflow-x-auto py-2 scrollbar-none">
+					{/* Add button */}
+					<button
+						onClick={() => setShowHighlightCreator(true)}
+						className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer focus:outline-none"
+					>
+						<div className="w-14 h-14 rounded-full border border-dashed border-border/60 flex items-center justify-center text-text-muted hover:border-accent hover:text-accent transition-all duration-200 bg-card/20">
+							<span className="text-lg">+</span>
+						</div>
+						<span className="text-[10px] text-text-secondary font-medium">New Highlight</span>
+					</button>
+
+					{/* Highlights List */}
+					{highlights.map((h) => (
+						<button
+							key={h.id}
+							onClick={() => {
+								const linked = posts.filter((p) => h.postIds.includes(p.id));
+								setViewingHighlight({ ...h, posts: linked.length > 0 ? linked : posts.slice(0, 3) });
+								setCurrentHighlightIndex(0);
+							}}
+							className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer focus:outline-none group"
+						>
+							<div className="w-14 h-14 rounded-full p-0.5 border border-border/80 group-hover:border-accent transition-all bg-card overflow-hidden">
+								<div className="relative w-full h-full rounded-full overflow-hidden">
+									<Image src={h.coverUrl} alt={h.title} fill className="object-cover" />
+								</div>
+							</div>
+							<span className="text-[10px] text-text-secondary group-hover:text-text-primary transition-colors font-medium max-w-[64px] truncate">
+								{h.title}
+							</span>
+						</button>
+					))}
+				</div>
+			</div>
+
+			{/* VAULT DIRECTORY OPTIONS - UNIFIED REDIRECT MATRIX */}
+			<div className="mb-8 text-left">
+				<h3 className="text-[10px] text-text-muted font-mono uppercase tracking-wider mb-4">Vault Directories</h3>
+				<div className="grid grid-cols-2 gap-4">
+					<Link
+						href="/timeline"
+						className="p-5 rounded-[20px] bg-card border border-border/30 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 flex flex-col gap-2 group shadow-sm text-left"
+					>
+						<span className="text-xl">📅</span>
+						<h4 className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-none">Timeline Map</h4>
+						<p className="text-[10px] text-text-secondary leading-normal">Browse raw chronological memory streams.</p>
+					</Link>
+					<Link
+						href="/reels"
+						className="p-5 rounded-[20px] bg-card border border-border/30 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 flex flex-col gap-2 group shadow-sm text-left"
+					>
+						<span className="text-xl">🎬</span>
+						<h4 className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-none">Video Reels</h4>
+						<p className="text-[10px] text-text-secondary leading-normal">Watch vertical video-snap memory cards.</p>
+					</Link>
+					<Link
+						href="/stories"
+						className="p-5 rounded-[20px] bg-card border border-border/30 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 flex flex-col gap-2 group shadow-sm text-left"
+					>
+						<span className="text-xl">🔮</span>
+						<h4 className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-none">Stories Archive</h4>
+						<p className="text-[10px] text-text-secondary leading-normal">Explore past 24h moment uploads.</p>
+					</Link>
+					<Link
+						href="/collections"
+						className="p-5 rounded-[20px] bg-card border border-border/30 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 flex flex-col gap-2 group shadow-sm text-left"
+					>
+						<span className="text-xl">📖</span>
+						<h4 className="text-xs font-bold text-text-primary group-hover:text-accent transition-colors leading-none">Journal Books</h4>
+						<p className="text-[10px] text-text-secondary leading-normal">Open curated diaries & photo albums.</p>
+					</Link>
+				</div>
+			</div>
+
 			{/* Organized Personal Dashboard Stats */}
 			<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
 				<div className="p-4 rounded-[16px] border border-border/20 bg-card text-center shadow-sm">
@@ -201,37 +304,37 @@ export default function ProfilePageClient() {
 				</div>
 				<div className="p-4 rounded-[16px] border border-border/20 bg-card text-center shadow-sm">
 					<span className="block text-sm font-bold text-accent truncate mt-1">{primaryMood}</span>
-					<span className="text-[10px] uppercase tracking-wider text-text-muted font-semibold">Primary Mood</span>
+					<span className="text-[10px] uppercase tracking-wider text-text-muted font-semibold">Primary Vibe</span>
 				</div>
 			</div>
 
 			{/* Mood Breakdown Visualization */}
 			{moodsList.length > 0 && (
-				<div className="mb-8 p-6 rounded-[24px] border border-border/30 bg-card shadow-sm">
+				<div className="mb-8 p-6 rounded-[24px] border border-border/30 bg-card shadow-sm text-left">
 					<h2 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted mb-4">Mood Map</h2>
 					<div className="h-2 w-full bg-surface rounded-full overflow-hidden flex mb-4">
 						{moodsList.map((item, idx) => {
 							const colors = ["bg-accent", "bg-[#38bdf8]", "bg-[#34d399]", "bg-[#f59e0b]", "bg-[#ec4899]"];
 							const color = colors[idx % colors.length];
 							return (
-								<div 
-									key={item.mood} 
-									className={`${color} h-full`} 
+								<div
+									key={item.mood}
+									className={`${color} h-full`}
 									style={{ width: `${item.percentage}%` }}
-									title={`${item.mood}: ${item.percentage}%`}
 								/>
 							);
 						})}
 					</div>
-					<div className="flex flex-wrap gap-x-4 gap-y-2">
+					<div className="flex flex-wrap gap-x-4 gap-y-2 mt-4">
 						{moodsList.map((item, idx) => {
-							const dots = ["bg-accent", "bg-[#38bdf8]", "bg-[#34d399]", "bg-[#f59e0b]", "bg-[#ec4899]"];
-							const dotColor = dots[idx % dots.length];
+							const colors = ["bg-accent", "bg-[#38bdf8]", "bg-[#34d399]", "bg-[#f59e0b]", "bg-[#ec4899]"];
+							const color = colors[idx % colors.length];
 							return (
-								<div key={item.mood} className="flex items-center gap-1.5 text-xs text-text-secondary">
-									<span className={`w-2 h-2 rounded-full ${dotColor}`} />
-									<span className="font-semibold">{item.mood}</span>
-									<span className="text-text-muted text-[10px]">({item.percentage}%)</span>
+								<div key={item.mood} className="flex items-center gap-2">
+									<span className={`w-2 h-2 rounded-full ${color}`} />
+									<span className="text-[10px] text-text-secondary leading-none font-mono">
+										{item.mood} ({item.percentage}%)
+									</span>
 								</div>
 							);
 						})}
@@ -239,242 +342,235 @@ export default function ProfilePageClient() {
 				</div>
 			)}
 
-			{/* Sub-page Switcher Tabs */}
-			<div className="p-1 rounded-xl bg-card border border-border/25 mb-6 max-w-sm flex items-center shadow-inner">
-				<button
-					type="button"
-					onClick={() => setActiveTab("directory")}
-					className={`flex-1 py-2 text-center text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer ${
-						activeTab === "directory"
-							? "bg-[#0c0c0e] text-accent border border-accent/20 shadow-sm"
-							: "text-text-secondary hover:text-text-primary"
-					}`}
-				>
-					Directory
-				</button>
-				<button
-					type="button"
-					onClick={() => setActiveTab("reels")}
-					className={`flex-1 py-2 text-center text-xs font-semibold rounded-lg transition-all duration-300 cursor-pointer ${
-						activeTab === "reels"
-							? "bg-[#0c0c0e] text-accent border border-accent/20 shadow-sm"
-							: "text-text-secondary hover:text-text-primary"
-					}`}
-				>
-					Video Reels
-				</button>
+			{/* Memory Directory List */}
+			<div className="border border-border/30 rounded-[24px] bg-card overflow-hidden text-left">
+				<div className="px-6 py-4 border-b border-border/20 flex items-center justify-between">
+					<h2 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted">Memory Directory</h2>
+					<span className="text-[10px] text-text-muted font-mono">{posts.length} entries</span>
+				</div>
+				{posts.length === 0 ? (
+					<div className="py-12 text-center text-text-muted text-xs">
+						No entries recorded yet.
+					</div>
+				) : (
+					<div className="divide-y divide-border/20 max-h-[480px] overflow-y-auto">
+						{posts.map((post) => {
+							const formattedDate = new Date(post.createdAt).toLocaleDateString("en-US", {
+								month: "short",
+								day: "numeric",
+								year: "2-digit",
+							});
+							return (
+								<div
+									key={post.id}
+									onClick={() => setSelectedPost(post)}
+									className={`flex items-center justify-between gap-4 px-6 py-4 text-left transition-colors cursor-pointer hover:bg-surface/40 ${
+										selectedPost?.id === post.id ? "bg-surface/60" : ""
+									}`}
+								>
+									<div className="min-w-0 flex-1 space-y-1">
+										<div className="flex items-center gap-2">
+											<span className="text-[10px] font-mono text-text-muted shrink-0">{formattedDate}</span>
+											{post.mood && (
+												<span className="px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-[9px] text-accent font-semibold uppercase tracking-wider font-mono">
+													{post.mood}
+												</span>
+											)}
+											{post.location && (
+												<span className="text-[10px] text-text-muted truncate max-w-[120px]">
+													📍 {post.location}
+												</span>
+											)}
+										</div>
+										<p className="text-sm text-text-primary font-serif truncate">
+											{post.caption || "Untitled memory"}
+										</p>
+									</div>
+									{post.mediaUrl && (
+										<div className="text-[10px] font-mono text-accent bg-accent/5 px-2 py-0.5 rounded border border-accent/10 uppercase tracking-wider font-semibold shrink-0">
+											{post.mediaType || "media"}
+										</div>
+									)}
+								</div>
+							);
+						})}
+					</div>
+				)}
 			</div>
 
-			{activeTab === "directory" ? (
-				/* List of Reflections Organised */
-				<div className="border border-border/30 rounded-[24px] bg-card overflow-hidden">
-					<div className="px-6 py-4 border-b border-border/20 flex items-center justify-between">
-						<h2 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted">Memory Directory</h2>
-						<span className="text-[10px] text-text-muted font-mono">{posts.length} entries</span>
+			{/* Detail Overlay Card */}
+			{selectedPost && (
+				<div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+					<div
+						className="fixed inset-0"
+						onClick={() => setSelectedPost(null)}
+					/>
+					<div className="relative w-full max-w-[500px] z-10 animate-scale-in">
+						<button
+							onClick={() => setSelectedPost(null)}
+							className="absolute -top-10 right-0 w-8 h-8 rounded-full bg-black/80 text-white flex items-center justify-center text-xs font-bold cursor-pointer"
+						>
+							✕
+						</button>
+						<PostCard
+							id={selectedPost.id}
+							username={session?.user?.name ?? "You"}
+							userImage={session?.user?.image}
+							mediaUrl={selectedPost.mediaUrl}
+							mediaType={selectedPost.mediaType}
+							caption={selectedPost.caption}
+							location={selectedPost.location}
+							mood={selectedPost.mood}
+							createdAt={selectedPost.createdAt}
+							onDelete={(id) => {
+								handleDelete(id);
+								setSelectedPost(null);
+							}}
+						/>
 					</div>
-					{posts.length === 0 ? (
-						<div className="py-12 text-center text-text-muted text-xs">
-							No entries recorded yet.
-						</div>
-					) : (
-						<div className="divide-y divide-border/20 max-h-[480px] overflow-y-auto">
-							{posts.map((post) => {
-								const formattedDate = new Date(post.createdAt).toLocaleDateString("en-US", {
-									month: "short",
-									day: "numeric",
-									year: "2-digit"
-								});
-								return (
-									<div 
-										key={post.id}
-										onClick={() => setSelectedPost(post)}
-										className={`flex items-center justify-between gap-4 px-6 py-4 text-left transition-colors cursor-pointer hover:bg-surface/40 ${
-											selectedPost?.id === post.id ? "bg-surface/60" : ""
-										}`}
-									>
-										<div className="min-w-0 flex-1 space-y-1">
-											<div className="flex items-center gap-2">
-												<span className="text-[10px] font-mono text-text-muted shrink-0">{formattedDate}</span>
-												{post.mood && (
-													<span className="px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-[9px] text-accent font-semibold uppercase tracking-wider font-mono">
-														{post.mood}
-													</span>
-												)}
-												{post.location && (
-													<span className="text-[10px] text-text-muted truncate max-w-[120px]">
-														📍 {post.location}
-													</span>
-												)}
-											</div>
-											<p className="text-sm text-text-primary font-serif truncate">
-												{post.caption || "Untitled memory"}
-											</p>
-										</div>
-
-										{/* Media indicator */}
-										{post.mediaUrl && (
-											<div className="text-[10px] font-mono text-accent bg-accent/5 px-2 py-0.5 rounded border border-accent/10 uppercase tracking-wider font-semibold shrink-0">
-												{post.mediaType || "media"}
-											</div>
-										)}
-									</div>
-								);
-							})}
-						</div>
-					)}
 				</div>
-			) : (
-				/* Video Reels Grid */
-				<div className="border border-border/30 rounded-[24px] bg-card p-6 min-h-[300px]">
-					<div className="flex items-center justify-between mb-6">
-						<h2 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted">Video Memories</h2>
-						<span className="text-[10px] text-text-muted font-mono">{videoReels.length} videos</span>
-					</div>
-					{videoReels.length === 0 ? (
-						<div className="py-16 text-center text-text-muted text-xs">
-							No video entries found in your reflections database.
-						</div>
-					) : (
-						<div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-							{videoReels.map((reel, idx) => (
-								<div
-									key={reel.id}
-									onClick={() => setActiveReelIndex(idx)}
-									className="aspect-[9/16] relative rounded-2xl overflow-hidden bg-card border border-border/30 shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer group"
-								>
-									<video
-										src={reel.mediaUrl!}
-										className="w-full h-full object-cover pointer-events-none"
-										muted
-										playsInline
-										loop
-										autoPlay
+			)}
+
+			{/* INSTAGRAM-STYLE HIGHLIGHT PLAYER MODAL */}
+			{viewingHighlight && viewingHighlight.posts && viewingHighlight.posts.length > 0 && (
+				<div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+					<div className="absolute inset-0" onClick={() => setViewingHighlight(null)} />
+					<div className="relative w-full max-w-[420px] aspect-[9/16] bg-card rounded-3xl overflow-hidden border border-border/40 flex flex-col z-10 animate-scale-in text-white shadow-2xl">
+						{/* Progress Indicators */}
+						<div className="absolute top-3 left-4 right-4 flex gap-1.5 z-20">
+							{viewingHighlight.posts.map((_, idx) => (
+								<div key={idx} className="flex-1 h-1 rounded-full bg-white/20 overflow-hidden">
+									<div
+										className="h-full bg-accent transition-all duration-3000 ease-linear"
+										style={{
+											width: idx < currentHighlightIndex ? "100%" : idx === currentHighlightIndex ? "100%" : "0%",
+										}}
 									/>
-									<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
-										<div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/25 flex items-center justify-center text-white">
-											<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="ml-0.5">
-												<polygon points="5 3 19 12 5 21 5 3" />
-											</svg>
-										</div>
-									</div>
-									<div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent z-10 text-left">
-										<p className="text-[10px] text-white/95 truncate font-serif">{reel.caption ?? "Video Note"}</p>
-									</div>
 								</div>
 							))}
 						</div>
-					)}
-				</div>
-			)}
 
-			{/* Selected reflection view (from directory) */}
-			{activeTab === "directory" && selectedPost && (
-				<div className="mt-8 border border-border/30 rounded-[24px] bg-card p-6 animate-slide-up relative">
-					<button
-						onClick={() => setSelectedPost(null)}
-						className="absolute top-4 right-4 text-text-muted hover:text-text-primary text-xs cursor-pointer"
-					>
-						✕ Close Preview
-					</button>
-					<h3 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted mb-4">Selected Reflection</h3>
-					<PostCard
-						id={selectedPost.id}
-						username={session?.user?.name ?? "You"}
-						userImage={session?.user?.image}
-						mediaUrl={selectedPost.mediaUrl}
-						mediaType={selectedPost.mediaType}
-						caption={selectedPost.caption}
-						location={selectedPost.location}
-						mood={selectedPost.mood}
-						createdAt={selectedPost.createdAt}
-						onDelete={handleDelete}
-					/>
-				</div>
-			)}
-
-			{/* ── Immersive Cinematic Reels Watch Theater Overlay ── */}
-			{activeReelIndex !== null && activeReel && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md animate-fade-in">
-					{/* Close click area */}
-					<div
-						className="absolute inset-0 z-0 cursor-default"
-						onClick={() => setActiveReelIndex(null)}
-					/>
-
-					{/* Desktop Nav Arrows */}
-					<button
-						onClick={handlePrevReel}
-						disabled={activeReelIndex === 0}
-						className="absolute left-6 lg:left-16 z-20 w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none text-white flex items-center justify-center text-xl font-bold cursor-pointer transition-all active:scale-95 hidden md:flex"
-					>
-						‹
-					</button>
-
-					<button
-						onClick={handleNextReel}
-						disabled={activeReelIndex === videoReels.length - 1}
-						className="absolute right-6 lg:right-16 z-20 w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none text-white flex items-center justify-center text-xl font-bold cursor-pointer transition-all active:scale-95 hidden md:flex"
-					>
-						›
-					</button>
-
-					{/* Cinematic Video Card */}
-					<div className="relative aspect-[9/16] h-[85vh] max-h-[800px] w-full max-w-[420px] rounded-[32px] overflow-hidden border border-white/10 bg-[#0c0c0e] shadow-2xl flex flex-col justify-between z-10 animate-slide-up">
-						{/* Top close header bar */}
-						<div className="absolute top-0 inset-x-0 p-4 bg-gradient-to-b from-black/90 to-transparent z-10 flex items-center justify-between">
-							<div className="flex items-center gap-2">
-								<span className="text-[9px] uppercase tracking-wider font-mono text-accent font-semibold bg-accent/15 px-2 py-0.5 border border-accent/20 rounded">
-									Reels Mode
-								</span>
-								<span className="text-[10px] text-white/60 font-mono">
-									{new Date(activeReel.createdAt).toLocaleDateString("en-US", {
-										month: "short",
-										day: "numeric"
-									})}
-								</span>
-							</div>
+						{/* Highlight Header */}
+						<div className="absolute top-7 left-4 right-4 flex items-center justify-between z-20 text-white">
+							<span className="text-xs font-bold tracking-wide uppercase font-mono bg-black/45 px-3 py-1.5 rounded-full border border-white/10">
+								🌟 {viewingHighlight.title}
+							</span>
 							<button
-								onClick={() => setActiveReelIndex(null)}
-								className="text-white/60 hover:text-white p-1 rounded-lg hover:bg-white/5 cursor-pointer text-sm font-bold"
-								title="Close Reels"
+								onClick={() => setViewingHighlight(null)}
+								className="w-7 h-7 rounded-full bg-black/45 flex items-center justify-center text-xs font-bold cursor-pointer hover:bg-black/60 border border-white/10"
 							>
 								✕
 							</button>
 						</div>
 
-						{/* Full screen Video Tag */}
-						<div className="absolute inset-0 z-0">
-							<video
-								key={activeReel.id}
-								src={activeReel.mediaUrl!}
-								className="w-full h-full object-cover"
-								autoPlay
-								controls
-								playsInline
-								loop
+						{/* Highlight Slides */}
+						<div className="flex-1 relative w-full h-full bg-surface">
+							{viewingHighlight.posts[currentHighlightIndex].mediaUrl ? (
+								<div className="relative w-full h-full">
+									{viewingHighlight.posts[currentHighlightIndex].mediaType === "video" ? (
+										<video
+											src={viewingHighlight.posts[currentHighlightIndex].mediaUrl!}
+											className="w-full h-full object-cover"
+											autoPlay
+											muted
+											playsInline
+										/>
+									) : (
+										<Image
+											src={viewingHighlight.posts[currentHighlightIndex].mediaUrl!.split(",")[0]}
+											alt="Highlight memory"
+											fill
+											className="object-cover"
+										/>
+									)}
+								</div>
+							) : (
+								<div className="w-full h-full flex flex-col items-center justify-center p-6 text-center font-serif italic text-base bg-[#181512]">
+									&ldquo;{viewingHighlight.posts[currentHighlightIndex].caption}&rdquo;
+								</div>
+							)}
+
+							{/* Navigation Tap Overlays */}
+							<div
+								onClick={() => {
+									if (currentHighlightIndex > 0) {
+										setCurrentHighlightIndex(currentHighlightIndex - 1);
+									}
+								}}
+								className="absolute left-0 top-0 bottom-0 w-1/3 cursor-pointer z-10"
+							/>
+							<div
+								onClick={() => {
+									if (currentHighlightIndex < (viewingHighlight.posts?.length ?? 1) - 1) {
+										setCurrentHighlightIndex(currentHighlightIndex + 1);
+									} else {
+										setViewingHighlight(null);
+									}
+								}}
+								className="absolute right-0 top-0 bottom-0 w-1/3 cursor-pointer z-10"
 							/>
 						</div>
 
-						{/* Bottom Overlay Description */}
-						<div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-10 text-left text-white px-8 flex flex-col gap-2">
-							<div className="flex items-center gap-2">
-								<span className="text-xs font-bold">{session?.user?.name}</span>
-								{activeReel.mood && (
-									<span className="px-1.5 py-0.2 text-[8px] bg-accent/20 text-accent font-bold uppercase rounded border border-accent/30 tracking-wider">
-										{activeReel.mood}
-									</span>
-								)}
-								{activeReel.location && (
-									<span className="text-[9px] text-white/65">
-										📍 {activeReel.location}
-									</span>
-								)}
+						{/* Caption Overlay */}
+						{viewingHighlight.posts[currentHighlightIndex].caption && (
+							<div className="absolute bottom-6 left-4 right-4 bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/10 text-left z-20 text-xs leading-relaxed font-serif text-white/90">
+								{viewingHighlight.posts[currentHighlightIndex].caption}
 							</div>
-							{activeReel.caption && (
-								<p className="text-xs text-white/90 font-serif leading-relaxed line-clamp-3">
-									{activeReel.caption}
-								</p>
-							)}
+						)}
+					</div>
+				</div>
+			)}
+
+			{/* HIGHLIGHT CREATOR MODAL */}
+			{showHighlightCreator && (
+				<div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+					<div className="absolute inset-0" onClick={() => setShowHighlightCreator(false)} />
+					<div className="relative w-full max-w-[450px] bg-card border border-border/40 rounded-[28px] p-6 text-left z-10 animate-scale-in">
+						<h3 className="text-sm font-bold text-text-primary uppercase font-mono tracking-wider mb-4">Create Highlight</h3>
+						<input
+							type="text"
+							value={newHighlightTitle}
+							onChange={(e) => setNewHighlightTitle(e.target.value)}
+							placeholder="Highlight Title (e.g. Kyoto Trip)"
+							className="w-full h-10 px-4 rounded-xl border border-border/40 bg-card text-xs text-text-primary placeholder:text-text-muted focus:outline-none mb-4"
+						/>
+						<p className="text-[10px] text-text-muted font-mono uppercase tracking-wider mb-2">Select Memories</p>
+						<div className="max-h-48 overflow-y-auto border border-border/20 rounded-xl divide-y divide-border/10 mb-6 bg-surface/30">
+							{posts.map((p) => {
+								const isSelected = selectedHighlightPosts.includes(p.id);
+								return (
+									<div
+										key={p.id}
+										onClick={() => {
+											if (isSelected) {
+												setSelectedHighlightPosts(selectedHighlightPosts.filter((id) => id !== p.id));
+											} else {
+												setSelectedHighlightPosts([...selectedHighlightPosts, p.id]);
+											}
+										}}
+										className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-surface/50 text-xs transition-colors ${
+											isSelected ? "bg-accent/5 text-accent" : "text-text-secondary"
+										}`}
+									>
+										<span className="text-base shrink-0">{isSelected ? "☑" : "☐"}</span>
+										<span className="truncate flex-1 font-serif italic">{p.caption || "Photo memory"}</span>
+									</div>
+								);
+							})}
+						</div>
+						<div className="flex gap-2">
+							<button
+								onClick={() => setShowHighlightCreator(false)}
+								className="flex-1 h-9 rounded-xl border border-border text-xs font-semibold text-text-secondary hover:text-text-primary transition-all cursor-pointer"
+							>
+								Cancel
+							</button>
+							<button
+								onClick={handleCreateHighlight}
+								className="flex-1 h-9 rounded-xl bg-accent text-background text-xs font-semibold hover:bg-accent/90 transition-all cursor-pointer"
+							>
+								Save Highlight
+							</button>
 						</div>
 					</div>
 				</div>

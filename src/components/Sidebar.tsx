@@ -18,10 +18,6 @@ const MOOD_TYPES = [
 
 const NAV_ITEMS = [
 	{ href: "/home", label: "Home", icon: HomeIcon },
-	{ href: "/timeline", label: "Timeline", icon: ClockIcon },
-	{ href: "/reels", label: "Reels", icon: ReelsIcon },
-	{ href: "/stories", label: "Stories", icon: StoriesIcon },
-	{ href: "/collections", label: "Collections", icon: CollectionsIcon },
 	{ href: "/profile", label: "Profile", icon: ProfileIcon },
 ] as const;
 
