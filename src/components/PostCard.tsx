@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Dropdown from "@/components/ui/Dropdown";
+import CommentsModal from "@/components/CommentsModal";
 import { formatCaption } from "@/utils/text";
 import { useLikes } from "@/lib/api-client";
 import { mutate } from "swr";
@@ -38,6 +39,7 @@ export default function PostCard({
 }: PostCardProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [imageError, setImageError] = useState(false);
+	const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 	const lastTap = useRef<number>(0);
 
 	const { data: likesData } = useLikes(id ?? null);
@@ -203,6 +205,17 @@ export default function PostCard({
 							</span>
 						</div>
 
+						{/* Reflections & Notes */}
+						<button
+							onClick={() => setIsCommentsOpen(true)}
+							className="text-text-muted hover:text-text-primary transition-colors cursor-pointer p-0.5"
+							title="Self-notes & Reflections"
+						>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+								<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+							</svg>
+						</button>
+
 						{/* Export */}
 						<button className="text-text-muted hover:text-text-primary cursor-pointer p-0.5" title="Export Post">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
@@ -315,6 +328,17 @@ export default function PostCard({
 							</span>
 						</div>
 
+						{/* Reflections & Notes */}
+						<button
+							onClick={() => setIsCommentsOpen(true)}
+							className="text-text-muted hover:text-text-primary transition-colors cursor-pointer p-0.5"
+							title="Self-notes & Reflections"
+						>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+								<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+							</svg>
+						</button>
+
 						{/* Export */}
 						<button className="text-text-muted hover:text-text-primary cursor-pointer p-0.5" title="Export Post">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
@@ -349,6 +373,14 @@ export default function PostCard({
 					);
 				})()}
 			</div>
+
+			{id && (
+				<CommentsModal
+					isOpen={isCommentsOpen}
+					onClose={() => setIsCommentsOpen(false)}
+					postId={id}
+				/>
+			)}
 		</article>
 	);
 }

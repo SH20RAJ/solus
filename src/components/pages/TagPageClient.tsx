@@ -5,7 +5,8 @@ import Link from "next/link";
 import PostCard from "@/components/PostCard";
 import EmptyState from "@/components/EmptyState";
 import { PostCardSkeleton } from "@/components/Skeleton";
-import { usePosts } from "@/lib/api-client";
+import useSWR from "swr";
+import { fetcher } from "@/lib/api-client";
 import { mutate } from "swr";
 import { useSession } from "@/lib/auth-client";
 
@@ -28,13 +29,13 @@ export default function TagPageClient() {
 	const params = useParams();
 	const tag = params?.tag as string;
 	const { data: session } = useSession();
-	const { data: postsData, isLoading } = usePosts();
-	const posts = (postsData as PostsResponse)?.data ?? [];
 
-	const cleanTag = `#${tag?.toLowerCase()}`;
-	const filteredPosts = posts.filter((post) =>
-		post.caption?.toLowerCase().includes(cleanTag)
+	// Fetch posts filtered by tag directly from the server to bypass client-side pagination limits
+	const { data: postsData, isLoading } = useSWR<PostsResponse>(
+		tag ? `/api/posts?tag=${encodeURIComponent(tag)}&limit=100` : null,
+		fetcher
 	);
+	const filteredPosts = postsData?.data ?? [];
 
 	const handleDelete = async (postId: string) => {
 		if (confirm("Are you sure you want to delete this memory?")) {
