@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import DayPageClient from "@/components/pages/DayPageClient";
+import { APP_CONFIG } from "@/lib/config";
 
 interface PageProps {
 	params: Promise<{
@@ -18,6 +19,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 	return {
 		title: `Reflections on ${formatted} | Solus`,
 		description: `Browse private reflections, journals, and visual stories captured on ${formatted}.`,
+		alternates: {
+			canonical: `${APP_CONFIG.siteUrl}/day/${slug}`,
+		},
 	};
 }
 

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod/v4";
 import { zValidator } from "@hono/zod-validator";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, ilike } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { post } from "@/lib/db/schema";
 import { authMiddleware } from "@/server/api/middleware/auth";
@@ -16,23 +16,26 @@ const posts = new Hono()
 		const tag = c.req.query("tag");
 		const loc = c.req.query("location");
 
-		let results = await db
-			.select()
-			.from(post)
-			.where(eq(post.userId, userId))
-			.orderBy(desc(post.createdAt));
+		const conditions = [eq(post.userId, userId)];
 
 		if (tag) {
-			const cleanTag = `#${tag.toLowerCase()}`;
-			results = results.filter((p) => p.caption?.toLowerCase().includes(cleanTag));
+			conditions.push(ilike(post.caption, `%#${tag.toLowerCase()}%`));
 		}
 
 		if (loc) {
-			results = results.filter((p) => p.location?.toLowerCase() === loc.toLowerCase());
+			conditions.push(ilike(post.location, loc));
 		}
 
-		const paginated = results.slice(offset, offset + limit);
-		const hasMore = offset + limit < results.length;
+		const results = await db
+			.select()
+			.from(post)
+			.where(and(...conditions))
+			.orderBy(desc(post.createdAt))
+			.limit(limit + 1)
+			.offset(offset);
+
+		const hasMore = results.length > limit;
+		const paginated = hasMore ? results.slice(0, limit) : results;
 
 		return c.json({ success: true, data: paginated, hasMore });
 	})

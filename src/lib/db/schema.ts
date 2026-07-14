@@ -4,6 +4,7 @@ import {
 	timestamp,
 	boolean,
 	integer,
+	index,
 } from "drizzle-orm/pg-core";
 
 /* ─── Better Auth Tables ─── */
@@ -74,7 +75,11 @@ export const post = pgTable("post", {
 	publishAt: timestamp("publish_at"),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => [
+	index("post_user_id_idx").on(table.userId),
+	index("post_created_at_idx").on(table.createdAt),
+	index("post_location_idx").on(table.location),
+]);
 
 export const story = pgTable("story", {
 	id: text("id").primaryKey(),
@@ -86,7 +91,10 @@ export const story = pgTable("story", {
 	caption: text("caption"),
 	expiresAt: timestamp("expires_at").notNull(),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => [
+	index("story_user_id_idx").on(table.userId),
+	index("story_created_at_idx").on(table.createdAt),
+]);
 
 export const journey = pgTable("journey", {
 	id: text("id").primaryKey(),
@@ -100,7 +108,9 @@ export const journey = pgTable("journey", {
 	publishAt: timestamp("publish_at"),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (table) => [
+	index("journey_user_id_idx").on(table.userId),
+]);
 
 export const journeyPost = pgTable("journey_post", {
 	id: text("id").primaryKey(),
@@ -112,7 +122,10 @@ export const journeyPost = pgTable("journey_post", {
 		.references(() => post.id, { onDelete: "cascade" }),
 	order: integer("order").notNull().default(0),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => [
+	index("journey_post_journey_id_idx").on(table.journeyId),
+	index("journey_post_post_id_idx").on(table.postId),
+]);
 
 export const comment = pgTable("comment", {
 	id: text("id").primaryKey(),
@@ -125,7 +138,10 @@ export const comment = pgTable("comment", {
 	content: text("content").notNull(),
 	parentId: text("parent_id").references((): any => comment.id, { onDelete: "cascade" }),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => [
+	index("comment_post_id_idx").on(table.postId),
+	index("comment_user_id_idx").on(table.userId),
+]);
 
 export const postLike = pgTable("post_like", {
 	id: text("id").primaryKey(),
@@ -136,5 +152,8 @@ export const postLike = pgTable("post_like", {
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (table) => [
+	index("post_like_post_id_idx").on(table.postId),
+	index("post_like_user_id_idx").on(table.userId),
+]);
 

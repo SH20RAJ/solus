@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { APP_CONFIG } from "@/lib/config";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+
+export const metadata: Metadata = {
+	alternates: {
+		canonical: APP_CONFIG.siteUrl,
+	},
+};
 
 export default async function LandingPage() {
 	const session = await auth.api.getSession({

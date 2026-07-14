@@ -10,6 +10,9 @@ export const metadata: Metadata = {
 	title: "Solus — Pitch",
 	description:
 		"The world's first Personal Social Network. Document your life without an audience, share your story when you're ready.",
+	alternates: {
+		canonical: `${APP_CONFIG.siteUrl}/pitch`,
+	},
 };
 
 export default async function PitchPage() {
