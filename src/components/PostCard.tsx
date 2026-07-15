@@ -7,7 +7,7 @@ import Dropdown from "@/components/ui/Dropdown";
 import CommentsModal from "@/components/CommentsModal";
 import { formatCaption } from "@/utils/text";
 import { renderMarkdown } from "@/utils/markdown";
-import { useLikes } from "@/lib/api-client";
+import { useLikes, LikesResponse } from "@/lib/api-client";
 import { mutate } from "swr";
 
 interface PostCardProps {
@@ -48,14 +48,30 @@ export default function PostCard({
 
 	const handleLikeToggle = async () => {
 		if (!id) return;
+
+		const currentLikes = likesData ?? {
+			success: true,
+			data: { liked: false, count: 0 }
+		};
+
+		const nextLiked = !currentLikes.data.liked;
+		const nextCount = nextLiked ? currentLikes.data.count + 1 : Math.max(0, currentLikes.data.count - 1);
+
+		const optimisticData: LikesResponse = {
+			success: true,
+			data: { liked: nextLiked, count: nextCount }
+		};
+
 		try {
+			mutate(`/api/likes/post/${id}`, optimisticData, false);
+
 			await fetch(`/api/likes/post/${id}`, {
 				method: "POST",
 				credentials: "include",
 			});
 			mutate(`/api/likes/post/${id}`);
 		} catch {
-			// fail silently
+			mutate(`/api/likes/post/${id}`, currentLikes, false);
 		}
 	};
 

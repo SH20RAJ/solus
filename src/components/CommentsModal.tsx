@@ -55,24 +55,51 @@ export default function CommentsModal({ isOpen, onClose, postId }: CommentsModal
 		e.preventDefault();
 		if (!newComment.trim() || isSubmitting) return;
 
+		const currentComments = commentsData as CommentsResponse ?? { success: true, data: [] };
+		const mockComment: Comment = {
+			id: `temp-${Date.now()}`,
+			postId,
+			userId: session?.user?.id ?? "temp-user",
+			content: newComment,
+			parentId: replyTo?.id ?? null,
+			createdAt: new Date().toISOString(),
+			user: {
+				name: session?.user?.name ?? "You",
+				image: session?.user?.image ?? null,
+			}
+		};
+
+		const optimisticData: CommentsResponse = {
+			success: true,
+			data: [...currentComments.data, mockComment]
+		};
+
+		const savedComment = newComment;
+		const savedReplyTo = replyTo;
+
+		setNewComment("");
+		setReplyTo(null);
 		setIsSubmitting(true);
+
 		try {
-			await fetch(`/api/comments/post/${postId}`, {
+			mutate(`/api/comments/post/${postId}`, optimisticData, false);
+
+			const res = await fetch(`/api/comments/post/${postId}`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
 				body: JSON.stringify({
-					content: newComment,
-					parentId: replyTo?.id ?? undefined,
+					content: savedComment,
+					parentId: savedReplyTo?.id ?? undefined,
 				}),
 			});
+			if (!res.ok) throw new Error("Comment post failed");
 
-			setNewComment("");
-			setReplyTo(null);
-			// Refresh comments
-			await mutate(`/api/comments/post/${postId}`);
+			mutate(`/api/comments/post/${postId}`);
 		} catch {
-			// Silently fail
+			setNewComment(savedComment);
+			setReplyTo(savedReplyTo);
+			mutate(`/api/comments/post/${postId}`, currentComments, false);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -81,14 +108,24 @@ export default function CommentsModal({ isOpen, onClose, postId }: CommentsModal
 	const handleDelete = async (commentId: string) => {
 		if (!confirm("Are you sure you want to delete this comment?")) return;
 
+		const currentComments = commentsData as CommentsResponse ?? { success: true, data: [] };
+		const optimisticData: CommentsResponse = {
+			success: true,
+			data: currentComments.data.filter((c) => c.id !== commentId)
+		};
+
 		try {
-			await fetch(`/api/comments/${commentId}`, {
+			mutate(`/api/comments/post/${postId}`, optimisticData, false);
+
+			const res = await fetch(`/api/comments/${commentId}`, {
 				method: "DELETE",
 				credentials: "include",
 			});
-			await mutate(`/api/comments/post/${postId}`);
+			if (!res.ok) throw new Error("Comment delete failed");
+
+			mutate(`/api/comments/post/${postId}`);
 		} catch {
-			// Silently fail
+			mutate(`/api/comments/post/${postId}`, currentComments, false);
 		}
 	};
 

@@ -135,15 +135,22 @@ export default function HomePageClient() {
 
 	const handleDelete = async (postId: string) => {
 		if (confirm("Are you sure you want to delete this memory?")) {
+			const previousPosts = [...posts];
+			const previousOffset = offset;
+
+			setPosts((prev) => prev.filter((p) => p.id !== postId));
+			setOffset((prev) => Math.max(0, prev - 1));
+
 			try {
-				await fetch(`/api/posts/${postId}`, {
+				const res = await fetch(`/api/posts/${postId}`, {
 					method: "DELETE",
 					credentials: "include",
 				});
-				setPosts((prev) => prev.filter((p) => p.id !== postId));
-				setOffset((prev) => Math.max(0, prev - 1));
+				if (!res.ok) throw new Error("Delete failed");
 			} catch {
-				// Silently fail
+				setPosts(previousPosts);
+				setOffset(previousOffset);
+				alert("Failed to delete memory. Please try again.");
 			}
 		}
 	};
