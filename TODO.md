@@ -1,0 +1,1 @@
+- Add Chat Invite option with Link only.
