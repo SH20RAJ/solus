@@ -52,11 +52,15 @@ export default function HomePageClient() {
 	const loaderRef = useRef<HTMLDivElement | null>(null);
 	const fetchingRef = useRef(false);
 
-	const fetchPosts = async (currentOffset: number, isInitial = false) => {
+	const [sort, setSort] = useState<"foryou" | "latest" | "oldest">("foryou");
+	const [onThisDayPosts, setOnThisDayPosts] = useState<Post[]>([]);
+	const [showOnThisDayModal, setShowOnThisDayModal] = useState(false);
+
+	const fetchPosts = async (currentOffset: number, isInitial = false, currentSort = sort) => {
 		if (fetchingRef.current) return;
 		fetchingRef.current = true;
 		try {
-			const res = await fetch(`/api/posts?limit=10&offset=${currentOffset}`, { credentials: "include" });
+			const res = await fetch(`/api/posts?limit=10&offset=${currentOffset}&sort=${currentSort}`, { credentials: "include" });
 			const json = (await res.json()) as { success: boolean; data: Post[]; hasMore: boolean };
 			if (json.success) {
 				if (isInitial) {
@@ -83,8 +87,30 @@ export default function HomePageClient() {
 
 	// Initial load
 	useEffect(() => {
-		fetchPosts(0, true);
+		fetchPosts(0, true, "foryou");
+
+		const fetchOnThisDay = async () => {
+			try {
+				const res = await fetch("/api/posts/on-this-day", { credentials: "include" });
+				const json = await res.json();
+				if (json.success && json.data.length > 0) {
+					setOnThisDayPosts(json.data);
+				}
+			} catch (e) {
+				console.error("Failed to fetch on-this-day posts:", e);
+			}
+		};
+		fetchOnThisDay();
 	}, []);
+
+	const handleSortChange = (newSort: "foryou" | "latest" | "oldest") => {
+		setSort(newSort);
+		setPosts([]);
+		setOffset(0);
+		setHasMore(true);
+		setInitialLoading(true);
+		fetchPosts(0, true, newSort);
+	};
 
 	// Infinite Scroll Observer
 	useEffect(() => {
@@ -94,7 +120,7 @@ export default function HomePageClient() {
 			(entries) => {
 				if (entries[0].isIntersecting) {
 					setLoadingMore(true);
-					fetchPosts(offset);
+					fetchPosts(offset, false, sort);
 				}
 			},
 			{ threshold: 0.1 }
@@ -105,7 +131,7 @@ export default function HomePageClient() {
 		}
 
 		return () => observer.disconnect();
-	}, [initialLoading, hasMore, loadingMore, offset]);
+	}, [initialLoading, hasMore, loadingMore, offset, sort]);
 
 	const handleDelete = async (postId: string) => {
 		if (confirm("Are you sure you want to delete this memory?")) {
@@ -139,12 +165,6 @@ export default function HomePageClient() {
 			console.error("Mood log failed:", e);
 		}
 	};
-
-	// Resurface a memory "On This Day" (older than 2 days)
-	const memoryPost = posts.find((p) => {
-		const createdDate = new Date(p.createdAt).getTime();
-		return createdDate < Date.now() - 2 * 24 * 60 * 60 * 1000;
-	});
 
 	// Variables for chapter grouping logic
 	let lastLocation = "";
@@ -184,24 +204,25 @@ export default function HomePageClient() {
 			{/* Collections Row */}
 			<CollectionsRow />
 
-			{/* "ON THIS DAY" RESURFACING BLOCK */}
-			{memoryPost && (
-				<div className="mb-10 p-6 rounded-[24px] bg-[#1e1511] border border-[#d97706]/20 text-left shadow-lg relative overflow-hidden animate-fade-in">
+			{/* "ON THIS DAY" RESURFACING BANNER */}
+			{onThisDayPosts.length > 0 && (
+				<button
+					onClick={() => setShowOnThisDayModal(true)}
+					className="w-full mb-10 p-6 rounded-[24px] bg-[#1e1511] border border-[#d97706]/20 text-left shadow-lg relative overflow-hidden animate-fade-in hover:border-[#d97706]/40 hover:bg-[#251b16] transition-all duration-300 active:scale-[0.99] cursor-pointer block"
+				>
 					<div className="absolute right-4 top-4 text-[9px] font-mono font-bold text-[#d97706] uppercase tracking-widest bg-[#d97706]/10 px-2.5 py-1 rounded-full border border-[#d97706]/20">
-						On This Day
+						Anniversary
 					</div>
 					<span className="text-[10px] text-[#f59e0b] font-mono uppercase tracking-wider font-semibold">
-						{new Date(memoryPost.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+						On This Day
 					</span>
-					<p className="mt-3.5 text-base text-text-primary font-serif italic leading-relaxed">
-						&ldquo;{memoryPost.caption}&rdquo;
+					<p className="mt-2 text-sm text-text-primary font-serif leading-relaxed">
+						You logged <strong className="text-[#f59e0b]">{onThisDayPosts.length}</strong> {onThisDayPosts.length === 1 ? "memory" : "memories"} on this day in past years. Take a look back.
 					</p>
-					{memoryPost.location && (
-						<span className="mt-3 block text-[10px] text-text-muted">
-							📍 {memoryPost.location}
-						</span>
-					)}
-				</div>
+					<span className="mt-3 block text-[10px] text-accent font-mono hover:underline">
+						Open memories timeline →
+					</span>
+				</button>
 			)}
 
 			{/* Reflection Prompt Link */}
@@ -229,18 +250,37 @@ export default function HomePageClient() {
 
 			{/* Recent Reflections Feed */}
 			<section>
-				<div className="flex items-center justify-between mb-6">
-					<h2 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted">
-						Recent Reflections
-					</h2>
-					{posts.length > 0 && (
-						<Link
-							href="/timeline"
-							className="text-xs text-accent hover:underline transition-all duration-200"
-						>
-							View Timeline
-						</Link>
-					)}
+				<div className="flex flex-col gap-4 mb-6 text-left">
+					<div className="flex items-center justify-between">
+						<h2 className="text-xs uppercase tracking-[0.15em] font-mono text-text-muted">
+							Reflections Feed
+						</h2>
+						{posts.length > 0 && (
+							<Link
+								href="/timeline"
+								className="text-xs text-accent hover:underline transition-all duration-200"
+							>
+								View Timeline
+							</Link>
+						)}
+					</div>
+					
+					{/* Feed Tabs Controller */}
+					<div className="flex p-1 rounded-xl bg-card border border-border/20 max-w-xs">
+						{(["foryou", "latest", "oldest"] as const).map((t) => (
+							<button
+								key={t}
+								onClick={() => handleSortChange(t)}
+								className={`flex-1 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider font-semibold transition-all cursor-pointer ${
+									sort === t
+										? "bg-surface text-white border border-border/20 shadow-sm"
+										: "text-text-muted hover:text-text-primary"
+								}`}
+							>
+								{t === "foryou" ? "For You 🌟" : t === "latest" ? "Latest" : "Oldest"}
+							</button>
+						))}
+					</div>
 				</div>
 
 				{initialLoading ? (
@@ -341,6 +381,75 @@ export default function HomePageClient() {
 					</div>
 				)}
 			</section>
+
+			{/* ON THIS DAY HISTORICAL MODAL TIMELINE */}
+			{showOnThisDayModal && (
+				<div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+					<div className="absolute inset-0" onClick={() => setShowOnThisDayModal(false)} />
+					<div className="relative w-full max-w-[500px] max-h-[85vh] bg-[#09090b] border border-border/40 rounded-3xl flex flex-col z-10 animate-scale-in overflow-hidden shadow-2xl text-left">
+						{/* Header */}
+						<header className="px-6 py-4 border-b border-border/20 flex items-center justify-between bg-surface/30">
+							<div className="flex items-center gap-2 text-white">
+								<span className="text-xl">🕰️</span>
+								<div>
+									<h2 className="text-xs font-bold uppercase tracking-wider font-mono">On This Day</h2>
+									<p className="text-[10px] text-text-muted font-mono">Anniversary reflections from past years</p>
+								</div>
+							</div>
+							<button
+								onClick={() => setShowOnThisDayModal(false)}
+								className="text-text-muted hover:text-text-primary p-1.5 rounded-full hover:bg-surface/50 transition-all cursor-pointer"
+							>
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+									<line x1="18" y1="6" x2="6" y2="18" />
+									<line x1="6" y1="6" x2="18" y2="18" />
+								</svg>
+							</button>
+						</header>
+
+						{/* Content */}
+						<div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-none">
+							{onThisDayPosts.map((post) => {
+								const date = new Date(post.createdAt);
+								const yearsAgo = new Date().getFullYear() - date.getFullYear();
+								return (
+									<div key={post.id} className="relative pl-6 border-l border-accent/20 space-y-3">
+										{/* Pulsing indicator node */}
+										<div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-accent ring-4 ring-background border border-white/5" />
+										
+										<div className="flex items-center justify-between">
+											<span className="text-[10px] text-accent font-mono uppercase tracking-wider font-bold">
+												{yearsAgo} {yearsAgo === 1 ? "year" : "years"} ago ({date.getFullYear()})
+											</span>
+											{post.mood && (
+												<span className="px-1.5 py-0.5 rounded bg-accent/10 border border-accent/20 text-[9px] text-accent font-semibold uppercase tracking-wider font-mono">
+													{post.mood}
+												</span>
+											)}
+										</div>
+
+										<PostCard
+											id={post.id}
+											username={session?.user?.name ?? "You"}
+											userImage={session?.user?.image}
+											mediaUrl={post.mediaUrl}
+											mediaType={post.mediaType}
+											caption={post.caption}
+											location={post.location}
+											mood={post.mood}
+											createdAt={post.createdAt}
+											onDelete={(id) => {
+												handleDelete(id);
+												setOnThisDayPosts((prev) => prev.filter((p) => p.id !== id));
+											}}
+										/>
+									</div>
+								);
+							})}
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

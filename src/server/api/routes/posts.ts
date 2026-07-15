@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod/v4";
 import { zValidator } from "@hono/zod-validator";
-import { eq, desc, and, ilike } from "drizzle-orm";
+import { eq, desc, and, ilike, asc, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { post } from "@/lib/db/schema";
 import { authMiddleware } from "@/server/api/middleware/auth";
@@ -15,6 +15,7 @@ const posts = new Hono()
 		const offset = parseInt(c.req.query("offset") || "0");
 		const tag = c.req.query("tag");
 		const loc = c.req.query("location");
+		const sort = c.req.query("sort") || "latest";
 
 		const conditions = [eq(post.userId, userId)];
 
@@ -26,11 +27,18 @@ const posts = new Hono()
 			conditions.push(ilike(post.location, loc));
 		}
 
+		let orderClause = desc(post.createdAt);
+		if (sort === "oldest") {
+			orderClause = asc(post.createdAt);
+		} else if (sort === "foryou") {
+			orderClause = sql`random()`;
+		}
+
 		const results = await db
 			.select()
 			.from(post)
 			.where(and(...conditions))
-			.orderBy(desc(post.createdAt))
+			.orderBy(orderClause)
 			.limit(limit + 1)
 			.offset(offset);
 
@@ -38,6 +46,29 @@ const posts = new Hono()
 		const paginated = hasMore ? results.slice(0, limit) : results;
 
 		return c.json({ success: true, data: paginated, hasMore });
+	})
+	.get("/on-this-day", async (c) => {
+		const db = getDb();
+		const userId = c.get("user").id;
+		const now = new Date();
+		const month = now.getMonth() + 1;
+		const day = now.getDate();
+		const year = now.getFullYear();
+
+		const results = await db
+			.select()
+			.from(post)
+			.where(
+				and(
+					eq(post.userId, userId),
+					sql`EXTRACT(MONTH FROM ${post.createdAt}) = ${month}`,
+					sql`EXTRACT(DAY FROM ${post.createdAt}) = ${day}`,
+					sql`EXTRACT(YEAR FROM ${post.createdAt}) != ${year}`
+				)
+			)
+			.orderBy(desc(post.createdAt));
+
+		return c.json({ success: true, data: results });
 	})
 	.get("/:id", async (c) => {
 		const db = getDb();
