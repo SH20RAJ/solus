@@ -92,7 +92,7 @@ export default function HomePageClient() {
 		const fetchOnThisDay = async () => {
 			try {
 				const res = await fetch("/api/posts/on-this-day", { credentials: "include" });
-				const json = await res.json();
+				const json = (await res.json()) as { success: boolean; data: Post[] };
 				if (json.success && json.data.length > 0) {
 					setOnThisDayPosts(json.data);
 				}
