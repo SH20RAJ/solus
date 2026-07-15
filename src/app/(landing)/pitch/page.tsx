@@ -75,6 +75,21 @@ export default async function PitchPage() {
 				<p className="mt-6 text-lg text-text-secondary leading-relaxed">
 					Leave everyone. Don&apos;t leave yourself.
 				</p>
+				<div className="mt-8 flex flex-wrap gap-4 justify-start">
+					<Link
+						href="/pitch/deck"
+						className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-border/40 bg-card hover:bg-surface/50 text-xs font-semibold font-mono tracking-wider uppercase transition-all duration-200 cursor-pointer"
+					>
+						🖥️ Open Slides Presentation
+					</Link>
+					<a
+						href="/PITCH.pdf"
+						download="Solus_Pitch_Deck.pdf"
+						className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-accent/30 bg-accent/5 hover:bg-accent/10 text-accent text-xs font-semibold font-mono tracking-wider uppercase transition-all duration-200 cursor-pointer"
+					>
+						📥 Download PITCH.pdf
+					</a>
+				</div>
 			</section>
 
 			{/* ── Divider ── */}
