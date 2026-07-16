@@ -14,7 +14,7 @@ const app = new Hono().basePath("/api");
 app.use(
 	"/*",
 	cors({
-		origin: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+		origin: process.env.BETTER_AUTH_URL ?? "https://solus.shraj.workers.dev",
 		credentials: true,
 	})
 );
